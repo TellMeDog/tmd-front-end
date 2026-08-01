@@ -1,0 +1,14 @@
+node_modules
+.vite
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# 로컬 환경변수 (백엔드 주소 등, 커밋 X)
+.env.local
+.env.*.local
+
+# Capacitor (나중에 추가 시)
+ios/
+android/
