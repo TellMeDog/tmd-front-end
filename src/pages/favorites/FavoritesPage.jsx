@@ -7,7 +7,7 @@ export default function FavoritesPage() {
       <span className="eyebrow">SAVED PLACES</span>
       <h1 className="page-title">즐겨찾기</h1>
       <p className="page-description">멍이와 가고 싶은 장소를 모아두었어요.</p>
-      <div className={styles.grid} style={{ marginTop: 32 }}>
+      <div className={`${styles.grid} ${styles.favoriteGrid}`}>
         {places
           .filter((x) => x.saved)
           .map((place) => (

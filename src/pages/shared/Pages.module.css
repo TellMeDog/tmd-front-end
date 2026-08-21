@@ -18,6 +18,10 @@
 .grid::-webkit-scrollbar {
   display: none;
 }
+.favoriteGrid {
+  grid-template-columns: 1fr;
+  margin-top: 32px;
+}
 .hero {
   padding: 0 0 40px;
 }
@@ -174,6 +178,15 @@
   }
   .grid > * {
     min-width: 310px;
+  }
+  .favoriteGrid {
+    display: grid;
+    margin: 32px 0 0;
+    padding: 0;
+    overflow: visible;
+  }
+  .favoriteGrid > * {
+    min-width: 0;
   }
   .mapPreview {
     height: 260px;
