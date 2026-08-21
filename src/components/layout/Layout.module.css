@@ -1,0 +1,119 @@
+.desktopHeader {
+  height: 72px;
+  background: #fff;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.headerInner {
+  width: min(calc(100% - 48px), var(--content-width));
+  height: 100%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+.desktopNav {
+  display: flex;
+  align-self: stretch;
+  gap: 32px;
+  margin-left: 48px;
+}
+.desktopNav a {
+  display: flex;
+  align-items: center;
+  position: relative;
+  color: var(--color-text-subtle);
+  font-size: 16px;
+  font-weight: 600;
+}
+.desktopNav a.active {
+  color: var(--color-brand-600);
+}
+.desktopNav a.active::after {
+  content: '';
+  height: 3px;
+  border-radius: 2px 2px 0 0;
+  background: var(--color-brand-500);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.iconButton {
+  border: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+.iconButton:hover {
+  background: var(--color-brand-50);
+  color: var(--color-brand-600);
+}
+.profileButton {
+  min-height: 40px;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 0 12px 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.mobileHeader,
+.mobileBottomNav {
+  display: none;
+}
+@media (max-width: 767px) {
+  .desktopHeader {
+    display: none;
+  }
+  .mobileHeader {
+    height: 60px;
+    background: #fff;
+    border-bottom: 1px solid var(--color-border);
+    padding: 0 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .mobileBottomNav {
+    height: 68px;
+    background: rgba(255, 255, 255, 0.97);
+    border-top: 1px solid var(--color-border);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+  }
+  .mobileBottomNav a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #8b908a;
+    font-size: 12px;
+  }
+  .mobileBottomNav a.activeTab {
+    color: var(--color-brand-500);
+    font-weight: 700;
+  }
+}

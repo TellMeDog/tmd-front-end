@@ -1,14 +1,15 @@
+import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import Framework7 from 'framework7/lite-bundle';
-import Framework7React from 'framework7-react';
+import { BrowserRouter } from 'react-router-dom';
+import App from './app/App';
+import './styles/reset.css';
+import './styles/tokens.css';
+import './styles/global.css';
 
-// Framework7 core & react styles
-import 'framework7/css/bundle';
-import 'framework7-icons/css/framework7-icons.css';
-import './css/app.css';
-
-import App from './App.jsx';
-
-Framework7.use(Framework7React);
-
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById('root')).render(
+  <StrictMode>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </StrictMode>,
+);
