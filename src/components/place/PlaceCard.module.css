@@ -1,0 +1,110 @@
+.card {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: 20px;
+  padding: 12px;
+  display: grid;
+  grid-template-columns: 144px 1fr;
+  gap: 16px;
+  position: relative;
+  transition: 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.visual {
+  min-height: 132px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  color: white;
+  background: linear-gradient(145deg, #f4c681, #e99225);
+}
+.visual.available {
+  background: linear-gradient(145deg, #9bcdb2, #368764);
+}
+.visual.verify {
+  background: linear-gradient(145deg, #f4b792, #d8783d);
+}
+.content {
+  min-width: 0;
+  padding: 8px 32px 4px 0;
+}
+.meta {
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+.content h3 {
+  margin-top: 4px;
+  font-size: 20px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.content p {
+  margin: 8px 0 16px;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.badge,
+.area {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.badge {
+  background: var(--color-brand-100);
+  color: var(--color-brand-700);
+}
+.badge.available {
+  background: #e5f4eb;
+  color: var(--color-success);
+}
+.badge.verify {
+  background: #fff0e6;
+  color: #b95b21;
+}
+.area {
+  background: #f3f4f1;
+  color: var(--color-text-subtle);
+  margin-left: 6px;
+}
+.save {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  display: grid;
+  place-items: center;
+}
+.save.saved {
+  color: var(--color-brand-500);
+}
+@media (max-width: 767px) {
+  .card {
+    grid-template-columns: 112px 1fr;
+    gap: 12px;
+  }
+  .visual {
+    min-height: 120px;
+  }
+  .content {
+    padding-right: 20px;
+  }
+  .content h3 {
+    font-size: 16px;
+  }
+}

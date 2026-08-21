@@ -1,0 +1,238 @@
+.detailGrid {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  align-items: start;
+}
+.cover {
+  min-height: 480px;
+  border-radius: 28px;
+  background: linear-gradient(145deg, #f8d49f, #e99325);
+  display: grid;
+  place-items: center;
+  color: white;
+}
+.cover svg {
+  width: 72px;
+  height: 72px;
+}
+.detail {
+  padding: 28px;
+}
+.meta {
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+.detail h1 {
+  margin: 8px 0 20px;
+  font-size: 32px;
+  letter-spacing: -0.04em;
+}
+.verdict {
+  background: var(--color-brand-50);
+  border: 1px solid #f6d8ae;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-brand-700);
+}
+.verdict span {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #fff;
+  display: grid;
+  place-items: center;
+}
+.verdict div {
+  display: grid;
+}
+.list {
+  margin: 24px 0;
+  display: grid;
+  gap: 12px;
+}
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+}
+.list svg {
+  color: var(--color-success);
+}
+.source {
+  padding: 16px;
+  border-radius: 14px;
+  background: #f6f6f3;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 12px;
+  margin-top: 20px;
+}
+.flow {
+  width: min(calc(100% - 32px), 640px);
+  margin: 40px auto 104px;
+}
+.flowHead {
+  padding: 28px;
+  background: linear-gradient(145deg, #fff8ef, #fff);
+}
+.flowHead h1 {
+  margin: 8px 0;
+  font-size: 28px;
+}
+.progress {
+  height: 8px;
+  background: #eceeea;
+  border-radius: 8px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--color-brand-500);
+}
+.checks,
+.choices {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+.check,
+.choice {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: 16px;
+  min-height: 72px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.check.active,
+.choice.active {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-50);
+}
+.circle {
+  width: 32px;
+  height: 32px;
+  flex: none;
+  border: 2px solid var(--color-border);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.active .circle {
+  background: var(--color-brand-500);
+  border-color: var(--color-brand-500);
+  color: white;
+}
+.check div,
+.choice div {
+  display: grid;
+}
+.check small,
+.choice small {
+  color: var(--color-text-subtle);
+}
+.tip {
+  padding: 16px;
+  border-radius: 16px;
+  background: #fff7ea;
+  color: #795a31;
+  font-size: 12px;
+}
+.petCard {
+  padding: 24px;
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.petPhoto {
+  width: 80px;
+  height: 80px;
+  border-radius: 28px;
+  background: var(--color-brand-100);
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+}
+.petCard button {
+  margin-left: auto;
+}
+.addPetAction {
+  margin-top: 16px;
+  display: flex;
+  justify-content: flex-end;
+}
+.reportList {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+.report {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.reportIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  background: var(--color-brand-100);
+  color: var(--color-brand-700);
+  display: grid;
+  place-items: center;
+}
+.report div:nth-child(2) {
+  flex: 1;
+}
+.report small {
+  color: var(--color-text-subtle);
+}
+@media (max-width: 767px) {
+  .detailGrid {
+    display: block;
+  }
+  .cover {
+    min-height: 240px;
+    border-radius: 0;
+    margin: 0 -16px 20px;
+  }
+  .detail {
+    padding: 20px;
+  }
+  .detail h1 {
+    font-size: 28px;
+  }
+  .flow {
+    margin-top: 20px;
+  }
+  .flowHead {
+    padding: 20px;
+  }
+  .petCard {
+    padding: 16px;
+  }
+  .petCard button {
+    font-size: 0;
+    padding: 0;
+    width: 44px;
+  }
+  .report {
+    padding: 16px;
+  }
+}

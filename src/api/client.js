@@ -1,16 +1,5 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const delay = (value, ms = 250) => new Promise((resolve) => setTimeout(() => resolve(value), ms));
 
-async function request(path, options = {}) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options.headers },
-    ...options,
-  });
-
-  if (!res.ok) {
-    throw new Error(`API 요청 실패: ${res.status} ${path}`);
-  }
-
-  return res.json();
+export async function mockRequest(data) {
+  return delay({ success: true, data });
 }
-
-export default request;
