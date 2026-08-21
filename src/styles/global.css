@@ -1,0 +1,120 @@
+@font-face {
+  font-family: 'Pretendard';
+  src: url('../assets/fonts/PretendardVariable.woff2') format('woff2');
+  font-weight: 45 920;
+  font-style: normal;
+  font-display: swap;
+}
+html,
+body,
+#root {
+  min-height: 100%;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family:
+    'Pretendard',
+    -apple-system,
+    BlinkMacSystemFont,
+    system-ui,
+    sans-serif;
+  line-height: 1.5;
+}
+button {
+  color: inherit;
+}
+.page {
+  width: min(calc(100% - 48px), var(--content-width));
+  margin: 0 auto;
+  padding: 56px 0 104px;
+}
+.page-title {
+  font-size: var(--font-40);
+  letter-spacing: -0.04em;
+  line-height: 1.2;
+}
+.page-description {
+  margin-top: 8px;
+  color: var(--color-text-subtle);
+}
+.eyebrow {
+  color: var(--color-brand-600);
+  font-size: var(--font-12);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+.button {
+  min-height: 48px;
+  border: 0;
+  border-radius: var(--radius-12);
+  padding: 0 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 700;
+}
+.button--primary {
+  background: var(--color-brand-500);
+  color: var(--color-white);
+}
+.button--primary:hover {
+  background: var(--color-brand-600);
+}
+.button--secondary {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+}
+.card {
+  background: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-24);
+  box-shadow: var(--shadow-sm);
+}
+.field {
+  display: grid;
+  gap: 8px;
+}
+.field label {
+  font-size: var(--font-12);
+  font-weight: 700;
+}
+.field input {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  background: var(--color-white);
+  min-height: 52px;
+  padding: 0 16px;
+  outline: none;
+}
+.field input:focus {
+  border-color: var(--color-brand-500);
+  box-shadow: 0 0 0 3px rgba(246, 149, 28, 0.14);
+}
+.field-error {
+  color: var(--color-danger);
+  font-size: var(--font-12);
+}
+.empty-state {
+  padding: 80px 24px;
+  text-align: center;
+}
+.empty-state svg {
+  color: var(--color-brand-500);
+  margin-bottom: 16px;
+}
+.empty-state p {
+  color: var(--color-text-subtle);
+  margin-top: 8px;
+}
+@media (max-width: 767px) {
+  .page {
+    width: 100%;
+    padding: 32px 16px 96px;
+  }
+  .page-title {
+    font-size: var(--font-28);
+  }
+}
