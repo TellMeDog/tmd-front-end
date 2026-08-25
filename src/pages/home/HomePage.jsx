@@ -7,12 +7,22 @@ import {
   SlidersHorizontal,
   Utensils,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { getNearbyPlaces } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
+import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { places } from '../../mocks/data/places';
 import styles from '../shared/Pages.module.css';
+import KakaoMapPreview from './KakaoMapPreview';
+
+const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
+const NEARBY_CATEGORIES = ['카페', '음식점'];
+const PREVIEW_COUNT = 3;
 
 export default function HomePage() {
+  const { location } = useCurrentLocation();
+  const [nearbyPreview, setNearbyPreview] = useState([]);
   const categories = [
     { label: '전체', Icon: SlidersHorizontal },
     { label: '관광지', Icon: MapPin },
@@ -21,6 +31,13 @@ export default function HomePage() {
     { label: '숙박', Icon: BedDouble },
     { label: '쇼핑', Icon: ShoppingBag },
   ];
+
+  useEffect(() => {
+    if (!location) return;
+    getNearbyPlaces(location, { categories: NEARBY_CATEGORIES }).then(({ data }) => {
+      setNearbyPreview(data.slice(0, PREVIEW_COUNT));
+    });
+  }, [location]);
 
   return (
     <main className="page">
@@ -51,7 +68,11 @@ export default function HomePage() {
       </section>
       <section>
         <Link to="/map" className={styles.mapPreview}>
-          <span className={styles.mapPlaceholder}>지도 준비중</span>
+          {KAKAO_MAP_KEY ? (
+            <KakaoMapPreview apiKey={KAKAO_MAP_KEY} places={nearbyPreview} />
+          ) : (
+            <span className={styles.mapPlaceholder}>지도 준비중</span>
+          )}
         </Link>
       </section>
       <section>
