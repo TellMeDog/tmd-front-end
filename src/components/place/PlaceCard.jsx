@@ -5,7 +5,7 @@ import styles from './PlaceCard.module.css';
 export default function PlaceCard({ place }) {
   return (
     <article className={styles.card}>
-      <Link className={`${styles.visual} ${styles[place.status]}`} to={`/places/${place.id}`}>
+      <Link className={`${styles.visual} ${styles[place.status]}`} to={`/places/${place.id}`} data-role="visual">
         <MapPin size={36} />
       </Link>
       <div className={styles.content}>
