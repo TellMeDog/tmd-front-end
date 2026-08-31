@@ -1,0 +1,105 @@
+.section {
+  border-top: 1px solid var(--color-border);
+  padding-top: 20px;
+  margin-bottom: 8px;
+}
+.heading {
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+.empty {
+  color: var(--color-text-subtle);
+  font-size: 13px;
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.tag b {
+  font-weight: 800;
+}
+.tag.fit {
+  background: #e5f4eb;
+  color: var(--color-success);
+}
+.tag.different {
+  background: #fff4e0;
+  color: var(--color-warning);
+}
+.tag.rejected {
+  background: #fdeceb;
+  color: var(--color-danger);
+}
+.recent {
+  margin-top: 12px;
+  color: var(--color-text-subtle);
+  font-size: 12px;
+}
+.insight {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-brand-600);
+  font-size: 13px;
+  font-weight: 700;
+}
+.list {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+.item {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 12px;
+}
+.thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: linear-gradient(145deg, #f4c681, #e99225);
+}
+.itemBody {
+  min-width: 0;
+}
+.itemHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.nickname {
+  font-size: 14px;
+  font-weight: 700;
+}
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  color: var(--color-brand-500);
+}
+.date {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-text-subtle);
+  font-size: 11px;
+}
+.text {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
