@@ -9,6 +9,29 @@
   position: relative;
   z-index: 0;
 }
+.filterBar {
+  position: absolute;
+  top: 16px;
+  left: 4px;
+  right: 4px;
+  z-index: 20;
+  padding-bottom: 4px;
+}
+.locateButton {
+  position: absolute;
+  bottom: 7px;
+  right: 4px;
+  z-index: 20;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  place-items: center;
+}
 .mapStatus {
   color: var(--color-text-subtle);
   font-size: 16px;
@@ -23,46 +46,34 @@
   border: 3px solid #fff;
   box-shadow: 0 0 0 4px rgba(246, 149, 28, 0.25);
 }
-.markerLabel {
-  display: inline-block;
-  transform: translateY(-44px);
-  padding: 4px 10px;
-  border-radius: 8px;
-  background: var(--color-text);
-  color: #fff;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-.ticker {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 10;
-  display: flex;
-  gap: 12px;
-  padding: 16px 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.ticker::-webkit-scrollbar {
-  display: none;
-}
-.tickerItem {
-  flex: 0 0 auto;
-  width: 300px;
-  border-radius: 20px;
+.pin {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 2px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: grid;
+  place-items: center;
   cursor: pointer;
-  transition: 0.2s ease;
+  box-shadow: 0 2px 6px rgba(20, 20, 10, 0.25);
+  transition: 0.15s ease;
 }
-.tickerItemActive {
-  outline: 2px solid var(--color-brand-500);
-  outline-offset: 2px;
+.pin svg {
+  transform: rotate(45deg);
+  color: #fff;
 }
-@media (max-width: 767px) {
-  .tickerItem {
-    width: 260px;
-  }
+.pinAvailable {
+  background: var(--color-success);
+}
+.pinConditional {
+  background: var(--color-brand-500);
+}
+.pinVerify {
+  background: var(--color-danger);
+}
+.pinSelected {
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 4px 12px rgba(20, 20, 10, 0.35);
 }
