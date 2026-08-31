@@ -1,16 +1,9 @@
-import {
-  BedDouble,
-  Coffee,
-  MapPin,
-  Search,
-  ShoppingBag,
-  SlidersHorizontal,
-  Utensils,
-} from 'lucide-react';
+import { Search } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { getNearbyPlaces } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
+import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { places } from '../../mocks/data/places';
 import styles from '../shared/Pages.module.css';
@@ -21,16 +14,13 @@ const NEARBY_CATEGORIES = ['카페', '음식점'];
 const PREVIEW_COUNT = 3;
 
 export default function HomePage() {
+  const navigate = useNavigate();
   const { location } = useCurrentLocation();
   const [nearbyPreview, setNearbyPreview] = useState([]);
-  const categories = [
-    { label: '전체', Icon: SlidersHorizontal },
-    { label: '관광지', Icon: MapPin },
-    { label: '카페', Icon: Coffee },
-    { label: '음식점', Icon: Utensils },
-    { label: '숙박', Icon: BedDouble },
-    { label: '쇼핑', Icon: ShoppingBag },
-  ];
+
+  const handleSelectCategory = (category) => {
+    navigate(category ? `/map?category=${encodeURIComponent(category)}` : '/map');
+  };
 
   useEffect(() => {
     if (!location) return;
@@ -56,14 +46,7 @@ export default function HomePage() {
               <Search size={20} />
             </button>
           </div>
-          <div className={styles.chips}>
-            {categories.map(({ label, Icon }) => (
-              <button key={label}>
-                <Icon size={18} />
-                {label}
-              </button>
-            ))}
-          </div>
+          <PlaceFilterBar className={styles.chips} onSelect={handleSelectCategory} />
         </div>
       </section>
       <section>
