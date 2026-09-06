@@ -22,10 +22,20 @@ const toPlace = (marker, category) => ({
   status: MARKER_COLOR_STATUS[marker.markerColor] ?? 'conditional',
 });
 
-const fetchPlacesByCategory = ({ sw, ne }, category, petId) =>
-  apiRequest('/places/search/category', {
-    params: { swLat: sw.lat, swLng: sw.lng, neLat: ne.lat, neLng: ne.lng, category, petId },
-  }).then(({ data }) => data.map((marker) => toPlace(marker, category)));
+const fetchPlacesByCategory = ({ sw, ne }, category, petId) => {
+  const query = new URLSearchParams({
+    swLat: sw.lat,
+    swLng: sw.lng,
+    neLat: ne.lat,
+    neLng: ne.lng,
+    category,
+    petId,
+  });
+
+  return apiRequest(`/places/search/category?${query}`).then((data) =>
+    data.map((marker) => toPlace(marker, category)),
+  );
+};
 
 export const getNearbyPlaces = async (
   bounds,
