@@ -167,6 +167,21 @@
   place-items: center;
   text-align: center;
 }
+.pagination {
+  margin-top: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+.pagination button {
+  min-height: 40px;
+  padding: 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  background: var(--color-white);
+  font-weight: 700;
+}
 @media (max-width: 767px) {
   .hero {
     display: block;
