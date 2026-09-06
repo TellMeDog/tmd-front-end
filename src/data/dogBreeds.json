@@ -1,0 +1,94 @@
+[
+  { "value": "MALTESE", "label": "말티즈", "aliases": ["maltese"] },
+  { "value": "POODLE", "label": "푸들", "aliases": ["poodle"] },
+  { "value": "TOY_POODLE", "label": "토이 푸들", "aliases": ["toy poodle"] },
+  { "value": "POMERANIAN", "label": "포메라니안", "aliases": ["pomeranian"] },
+  { "value": "CHIHUAHUA", "label": "치와와", "aliases": ["chihuahua"] },
+  { "value": "BICHON_FRISE", "label": "비숑 프리제", "aliases": ["bichon frise"] },
+  {
+    "value": "YORKSHIRE_TERRIER",
+    "label": "요크셔 테리어",
+    "aliases": ["yorkshire terrier", "yorkie"]
+  },
+  { "value": "SHIH_TZU", "label": "시추", "aliases": ["shih tzu"] },
+  { "value": "PAPILLON", "label": "파피용", "aliases": ["papillon"] },
+  { "value": "DACHSHUND", "label": "닥스훈트", "aliases": ["dachshund"] },
+  { "value": "PUG", "label": "퍼그", "aliases": ["pug"] },
+  { "value": "FRENCH_BULLDOG", "label": "프렌치 불독", "aliases": ["french bulldog"] },
+  {
+    "value": "JACK_RUSSELL_TERRIER",
+    "label": "잭 러셀 테리어",
+    "aliases": ["jack russell terrier"]
+  },
+  { "value": "WELSH_CORGI", "label": "웰시 코기", "aliases": ["welsh corgi", "corgi"] },
+  { "value": "MALTIPOO", "label": "말티푸", "aliases": ["maltipoo"] },
+  { "value": "MINIATURE_PINSCHER", "label": "미니어처 핀셔", "aliases": ["miniature pinscher"] },
+  { "value": "PEKINGESE", "label": "페키니즈", "aliases": ["pekingese"] },
+  {
+    "value": "SHETLAND_SHEEPDOG",
+    "label": "셔틀랜드 쉽독",
+    "aliases": ["shetland sheepdog", "sheltie"]
+  },
+  { "value": "LHASA_APSO", "label": "라사 압소", "aliases": ["lhasa apso"] },
+  { "value": "HAVANESE", "label": "하바니즈", "aliases": ["havanese"] },
+  {
+    "value": "MINIATURE_SCHNAUZER",
+    "label": "미니어처 슈나우저",
+    "aliases": ["miniature schnauzer"]
+  },
+  {
+    "value": "WEST_HIGHLAND_WHITE_TERRIER",
+    "label": "웨스트 하이랜드 화이트 테리어",
+    "aliases": ["west highland white terrier", "westie"]
+  },
+  { "value": "SHIBA_INU", "label": "시바 이누", "aliases": ["shiba inu"] },
+  { "value": "JINDO", "label": "진돗개", "aliases": ["jindo"] },
+  { "value": "COCKER_SPANIEL", "label": "코커 스패니얼", "aliases": ["cocker spaniel"] },
+  { "value": "BEAGLE", "label": "비글", "aliases": ["beagle"] },
+  { "value": "BORDER_COLLIE", "label": "보더 콜리", "aliases": ["border collie"] },
+  { "value": "BULLDOG", "label": "불독", "aliases": ["bulldog"] },
+  { "value": "AMERICAN_BULLY", "label": "아메리칸 불리", "aliases": ["american bully"] },
+  { "value": "SAMOYED", "label": "사모예드", "aliases": ["samoyed"] },
+  { "value": "SIBERIAN_HUSKY", "label": "시베리안 허스키", "aliases": ["siberian husky", "husky"] },
+  {
+    "value": "AUSTRALIAN_SHEPHERD",
+    "label": "오스트레일리안 셰퍼드",
+    "aliases": ["australian shepherd"]
+  },
+  { "value": "BASSET_HOUND", "label": "바셋 하운드", "aliases": ["basset hound"] },
+  {
+    "value": "ENGLISH_COCKER_SPANIEL",
+    "label": "잉글리시 코커 스패니얼",
+    "aliases": ["english cocker spaniel"]
+  },
+  { "value": "CHOW_CHOW", "label": "차우차우", "aliases": ["chow chow"] },
+  { "value": "DALMATIAN", "label": "달마시안", "aliases": ["dalmatian"] },
+  { "value": "AKITA_INU", "label": "아키타 이누", "aliases": ["akita inu", "akita"] },
+  { "value": "BULL_TERRIER", "label": "불 테리어", "aliases": ["bull terrier"] },
+  { "value": "GOLDEN_RETRIEVER", "label": "골든 리트리버", "aliases": ["golden retriever"] },
+  {
+    "value": "LABRADOR_RETRIEVER",
+    "label": "래브라도 리트리버",
+    "aliases": ["labrador retriever", "labrador"]
+  },
+  { "value": "GERMAN_SHEPHERD", "label": "저먼 셰퍼드", "aliases": ["german shepherd"] },
+  { "value": "STANDARD_POODLE", "label": "스탠더드 푸들", "aliases": ["standard poodle"] },
+  { "value": "GREAT_PYRENEES", "label": "그레이트 피레니즈", "aliases": ["great pyrenees"] },
+  { "value": "DOBERMAN", "label": "도베르만", "aliases": ["doberman"] },
+  { "value": "ROTTWEILER", "label": "로트와일러", "aliases": ["rottweiler"] },
+  { "value": "BOXER", "label": "복서", "aliases": ["boxer"] },
+  {
+    "value": "ALASKAN_MALAMUTE",
+    "label": "알래스칸 말라뮤트",
+    "aliases": ["alaskan malamute", "malamute"]
+  },
+  {
+    "value": "BERNESE_MOUNTAIN_DOG",
+    "label": "버니즈 마운틴 도그",
+    "aliases": ["bernese mountain dog"]
+  },
+  { "value": "SAINT_BERNARD", "label": "세인트 버나드", "aliases": ["saint bernard"] },
+  { "value": "GREAT_DANE", "label": "그레이트 데인", "aliases": ["great dane"] },
+  { "value": "MIXED", "label": "믹스견", "aliases": ["mixed", "mix"] },
+  { "value": "ETC", "label": "기타", "aliases": ["etc", "other"] }
+]

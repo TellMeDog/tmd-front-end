@@ -169,8 +169,26 @@
   place-items: center;
   font-size: 44px;
 }
-.petCard button {
+.petPhoto img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+.emptyPetIcon {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 44px;
+}
+.petActions {
   margin-left: auto;
+  display: flex;
+  gap: 8px;
+}
+.deletePetButton {
+  background: #fff1f1;
+  color: var(--color-danger);
+  border: 1px solid #ffd5d5;
 }
 .addPetAction {
   margin-top: 16px;
@@ -227,7 +245,7 @@
   .petCard {
     padding: 16px;
   }
-  .petCard button {
+  .petActions button {
     font-size: 0;
     padding: 0;
     width: 44px;

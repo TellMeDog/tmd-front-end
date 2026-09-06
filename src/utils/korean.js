@@ -12,3 +12,14 @@ export function hasBatchim(word) {
 export function withSubjectParticle(word) {
   return `${word}${hasBatchim(word) ? '이' : '가'}`;
 }
+
+const INITIAL_CONSONANTS = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+
+export function getKoreanInitials(value = '') {
+  return [...value]
+    .map((character) => {
+      const code = character.charCodeAt(0) - 0xac00;
+      return code >= 0 && code <= 11171 ? INITIAL_CONSONANTS[Math.floor(code / 588)] : character;
+    })
+    .join('');
+}
