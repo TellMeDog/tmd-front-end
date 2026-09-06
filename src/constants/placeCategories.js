@@ -1,12 +1,12 @@
-import { BedDouble, Coffee, MapPin, ShoppingBag, SlidersHorizontal, Utensils } from 'lucide-react';
+import { BedDouble, Beer, Coffee, Mountain, SlidersHorizontal, Utensils } from 'lucide-react';
 
 export const PLACE_CATEGORIES = [
   { value: null, label: '전체', Icon: SlidersHorizontal },
-  { value: '관광지', label: '관광지', Icon: MapPin },
   { value: '카페', label: '카페', Icon: Coffee },
+  { value: '계곡', label: '계곡', Icon: Mountain },
+  { value: '숙소', label: '숙소', Icon: BedDouble },
   { value: '음식점', label: '음식점', Icon: Utensils },
-  { value: '숙박', label: '숙박', Icon: BedDouble },
-  { value: '쇼핑', label: '쇼핑', Icon: ShoppingBag },
+  { value: '주점', label: '주점', Icon: Beer },
 ];
 
 export const CATEGORY_ICON_MAP = Object.fromEntries(

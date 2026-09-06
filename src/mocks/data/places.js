@@ -28,7 +28,7 @@ export const places = [
   {
     id: 3,
     name: '스테이 포레스트',
-    category: '숙박',
+    category: '숙소',
     area: '한남동',
     distance: '4.8km',
     status: 'conditional',
