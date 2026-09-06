@@ -10,11 +10,6 @@ export async function apiRequest(path, { params } = {}) {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
   });
 
-  const token = localStorage.getItem('accessToken');
-  const response = await fetch(url, {
-    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-  });
-
   if (!response.ok) {
     throw new Error(`API 요청에 실패했어요. (${response.status})`);
   }
