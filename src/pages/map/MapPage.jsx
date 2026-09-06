@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getPlacesInBounds } from '../../api/places.api';
+import { getNearbyPlaces } from '../../api/places.api';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import pageStyles from '../shared/Pages.module.css';
@@ -29,11 +29,9 @@ export default function MapPage() {
 
   useEffect(() => {
     if (!bounds) return;
-    getPlacesInBounds(bounds, { origin: location, categories: category ? [category] : undefined }).then(
-      ({ data }) => {
-        setNearbyPlaces(data);
-      },
-    );
+    getNearbyPlaces(bounds, { origin: location, category }).then(({ data }) => {
+      setNearbyPlaces(data);
+    });
   }, [bounds, location, category]);
 
   const selectedPlace = useMemo(
