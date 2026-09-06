@@ -10,6 +10,8 @@ export async function apiRequest(path, { params } = {}) {
     if (value !== undefined && value !== null) url.searchParams.set(key, value);
   });
 
+  const response = await fetch(url);
+
   if (!response.ok) {
     throw new Error(`API 요청에 실패했어요. (${response.status})`);
   }
