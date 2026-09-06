@@ -1,7 +1,7 @@
 import { Search } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getPlacesInBounds } from '../../api/places.api';
+import { getNearbyPlaces } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
@@ -27,7 +27,7 @@ export default function HomePage() {
 
   useEffect(() => {
     if (!previewBounds) return;
-    getPlacesInBounds(previewBounds, { origin: location }).then(({ data }) => {
+    getNearbyPlaces(previewBounds, { origin: location }).then(({ data }) => {
       setNearbyPreview(data);
     });
   }, [previewBounds, location]);
