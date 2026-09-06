@@ -47,7 +47,7 @@ export default function BreedCombobox({ value, onChange, disabled }) {
           onFocus={() => setOpen(true)}
           onChange={(event) => {
             setQuery(event.target.value);
-            onChange('');
+            onChange(event.target.value);
             setOpen(true);
           }}
           onKeyDown={(event) => {
@@ -73,7 +73,7 @@ export default function BreedCombobox({ value, onChange, disabled }) {
               <li key={breed.value}>
                 <button type="button" onMouseDown={() => selectBreed(breed)}>
                   <span>{breed.label}</span>
-                  <small>{breed.value}</small>
+                  <small>{breed.aliases[0]}</small>
                 </button>
               </li>
             ))

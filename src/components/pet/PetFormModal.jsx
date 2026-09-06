@@ -57,7 +57,7 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
     const numericWeight = weight === '' ? null : Number(weight);
 
     if (!name.trim()) return setError('이름을 입력해 주세요.');
-    if (!breed) return setError('목록에서 견종을 선택해 주세요.');
+    if (!breed.trim()) return setError('견종을 입력해 주세요.');
     if (!isEdit && numericWeight === null) return setError('몸무게를 입력해 주세요.');
     if (numericWeight !== null && (!Number.isFinite(numericWeight) || numericWeight <= 0)) {
       return setError('몸무게는 0보다 큰 숫자로 입력해 주세요.');
@@ -77,7 +77,7 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
 
       const payload = {
         name: name.trim(),
-        breed,
+        breed: breed.trim(),
         size: numericWeight === null ? pet.size : numericWeight,
         imageUrl: imageKey || pet?.imageUrl || null,
       };

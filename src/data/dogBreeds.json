@@ -1,94 +1,692 @@
 [
-  { "value": "MALTESE", "label": "말티즈", "aliases": ["maltese"] },
-  { "value": "POODLE", "label": "푸들", "aliases": ["poodle"] },
-  { "value": "TOY_POODLE", "label": "토이 푸들", "aliases": ["toy poodle"] },
-  { "value": "POMERANIAN", "label": "포메라니안", "aliases": ["pomeranian"] },
-  { "value": "CHIHUAHUA", "label": "치와와", "aliases": ["chihuahua"] },
-  { "value": "BICHON_FRISE", "label": "비숑 프리제", "aliases": ["bichon frise"] },
   {
-    "value": "YORKSHIRE_TERRIER",
+    "value": "말티즈",
+    "label": "말티즈",
+    "aliases": ["maltese"]
+  },
+  {
+    "value": "푸들",
+    "label": "푸들",
+    "aliases": ["poodle"]
+  },
+  {
+    "value": "포메라니안",
+    "label": "포메라니안",
+    "aliases": ["pomeranian"]
+  },
+  {
+    "value": "믹스견",
+    "label": "믹스견",
+    "aliases": ["mixed", "mix"]
+  },
+  {
+    "value": "비숑 프리제",
+    "label": "비숑 프리제",
+    "aliases": ["bichon frise"]
+  },
+  {
+    "value": "치와와",
+    "label": "치와와",
+    "aliases": ["chihuahua"]
+  },
+  {
+    "value": "시추",
+    "label": "시추",
+    "aliases": ["shih tzu"]
+  },
+  {
+    "value": "진돗개",
+    "label": "진돗개",
+    "aliases": ["jindo"]
+  },
+  {
+    "value": "골든 리트리버",
+    "label": "골든 리트리버",
+    "aliases": ["golden retriever"]
+  },
+  {
+    "value": "웰시 코기",
+    "label": "웰시 코기",
+    "aliases": ["welsh corgi", "corgi"]
+  },
+  {
+    "value": "닥스훈트",
+    "label": "닥스훈트",
+    "aliases": ["dachshund"]
+  },
+  {
+    "value": "요크셔 테리어",
     "label": "요크셔 테리어",
     "aliases": ["yorkshire terrier", "yorkie"]
   },
-  { "value": "SHIH_TZU", "label": "시추", "aliases": ["shih tzu"] },
-  { "value": "PAPILLON", "label": "파피용", "aliases": ["papillon"] },
-  { "value": "DACHSHUND", "label": "닥스훈트", "aliases": ["dachshund"] },
-  { "value": "PUG", "label": "퍼그", "aliases": ["pug"] },
-  { "value": "FRENCH_BULLDOG", "label": "프렌치 불독", "aliases": ["french bulldog"] },
   {
-    "value": "JACK_RUSSELL_TERRIER",
-    "label": "잭 러셀 테리어",
-    "aliases": ["jack russell terrier"]
+    "value": "시베리안 허스키",
+    "label": "시베리안 허스키",
+    "aliases": ["siberian husky", "husky"]
   },
-  { "value": "WELSH_CORGI", "label": "웰시 코기", "aliases": ["welsh corgi", "corgi"] },
-  { "value": "MALTIPOO", "label": "말티푸", "aliases": ["maltipoo"] },
-  { "value": "MINIATURE_PINSCHER", "label": "미니어처 핀셔", "aliases": ["miniature pinscher"] },
-  { "value": "PEKINGESE", "label": "페키니즈", "aliases": ["pekingese"] },
   {
-    "value": "SHETLAND_SHEEPDOG",
-    "label": "셔틀랜드 쉽독",
-    "aliases": ["shetland sheepdog", "sheltie"]
+    "value": "말티푸",
+    "label": "말티푸",
+    "aliases": ["maltipoo"]
   },
-  { "value": "LHASA_APSO", "label": "라사 압소", "aliases": ["lhasa apso"] },
-  { "value": "HAVANESE", "label": "하바니즈", "aliases": ["havanese"] },
   {
-    "value": "MINIATURE_SCHNAUZER",
+    "value": "래브라도 리트리버",
+    "label": "래브라도 리트리버",
+    "aliases": ["labrador retriever", "labrador"]
+  },
+  {
+    "value": "재패니즈 스피츠",
+    "label": "재패니즈 스피츠",
+    "aliases": ["japanese spitz"]
+  },
+  {
+    "value": "프렌치 불독",
+    "label": "프렌치 불독",
+    "aliases": ["french bulldog"]
+  },
+  {
+    "value": "비글",
+    "label": "비글",
+    "aliases": ["beagle"]
+  },
+  {
+    "value": "사모예드",
+    "label": "사모예드",
+    "aliases": ["samoyed"]
+  },
+  {
+    "value": "미니어처 슈나우저",
     "label": "미니어처 슈나우저",
     "aliases": ["miniature schnauzer"]
   },
   {
-    "value": "WEST_HIGHLAND_WHITE_TERRIER",
+    "value": "코커 스패니얼",
+    "label": "코커 스패니얼",
+    "aliases": ["cocker spaniel"]
+  },
+  {
+    "value": "보더 콜리",
+    "label": "보더 콜리",
+    "aliases": ["border collie"]
+  },
+  {
+    "value": "퍼그",
+    "label": "퍼그",
+    "aliases": ["pug"]
+  },
+  {
+    "value": "토이 푸들",
+    "label": "토이 푸들",
+    "aliases": ["toy poodle"]
+  },
+  {
+    "value": "파피용",
+    "label": "파피용",
+    "aliases": ["papillon"]
+  },
+  {
+    "value": "잭 러셀 테리어",
+    "label": "잭 러셀 테리어",
+    "aliases": ["jack russell terrier"]
+  },
+  {
+    "value": "미니어처 핀셔",
+    "label": "미니어처 핀셔",
+    "aliases": ["miniature pinscher"]
+  },
+  {
+    "value": "페키니즈",
+    "label": "페키니즈",
+    "aliases": ["pekingese"]
+  },
+  {
+    "value": "셔틀랜드 쉽독",
+    "label": "셔틀랜드 쉽독",
+    "aliases": ["shetland sheepdog", "sheltie"]
+  },
+  {
+    "value": "라사 압소",
+    "label": "라사 압소",
+    "aliases": ["lhasa apso"]
+  },
+  {
+    "value": "하바니즈",
+    "label": "하바니즈",
+    "aliases": ["havanese"]
+  },
+  {
+    "value": "웨스트 하이랜드 화이트 테리어",
     "label": "웨스트 하이랜드 화이트 테리어",
     "aliases": ["west highland white terrier", "westie"]
   },
-  { "value": "SHIBA_INU", "label": "시바 이누", "aliases": ["shiba inu"] },
-  { "value": "JINDO", "label": "진돗개", "aliases": ["jindo"] },
-  { "value": "COCKER_SPANIEL", "label": "코커 스패니얼", "aliases": ["cocker spaniel"] },
-  { "value": "BEAGLE", "label": "비글", "aliases": ["beagle"] },
-  { "value": "BORDER_COLLIE", "label": "보더 콜리", "aliases": ["border collie"] },
-  { "value": "BULLDOG", "label": "불독", "aliases": ["bulldog"] },
-  { "value": "AMERICAN_BULLY", "label": "아메리칸 불리", "aliases": ["american bully"] },
-  { "value": "SAMOYED", "label": "사모예드", "aliases": ["samoyed"] },
-  { "value": "SIBERIAN_HUSKY", "label": "시베리안 허스키", "aliases": ["siberian husky", "husky"] },
   {
-    "value": "AUSTRALIAN_SHEPHERD",
+    "value": "시바 이누",
+    "label": "시바 이누",
+    "aliases": ["shiba inu"]
+  },
+  {
+    "value": "불독",
+    "label": "불독",
+    "aliases": ["bulldog"]
+  },
+  {
+    "value": "아메리칸 불리",
+    "label": "아메리칸 불리",
+    "aliases": ["american bully"]
+  },
+  {
+    "value": "오스트레일리안 셰퍼드",
     "label": "오스트레일리안 셰퍼드",
     "aliases": ["australian shepherd"]
   },
-  { "value": "BASSET_HOUND", "label": "바셋 하운드", "aliases": ["basset hound"] },
   {
-    "value": "ENGLISH_COCKER_SPANIEL",
+    "value": "바셋 하운드",
+    "label": "바셋 하운드",
+    "aliases": ["basset hound"]
+  },
+  {
+    "value": "잉글리시 코커 스패니얼",
     "label": "잉글리시 코커 스패니얼",
     "aliases": ["english cocker spaniel"]
   },
-  { "value": "CHOW_CHOW", "label": "차우차우", "aliases": ["chow chow"] },
-  { "value": "DALMATIAN", "label": "달마시안", "aliases": ["dalmatian"] },
-  { "value": "AKITA_INU", "label": "아키타 이누", "aliases": ["akita inu", "akita"] },
-  { "value": "BULL_TERRIER", "label": "불 테리어", "aliases": ["bull terrier"] },
-  { "value": "GOLDEN_RETRIEVER", "label": "골든 리트리버", "aliases": ["golden retriever"] },
   {
-    "value": "LABRADOR_RETRIEVER",
-    "label": "래브라도 리트리버",
-    "aliases": ["labrador retriever", "labrador"]
+    "value": "차우차우",
+    "label": "차우차우",
+    "aliases": ["chow chow"]
   },
-  { "value": "GERMAN_SHEPHERD", "label": "저먼 셰퍼드", "aliases": ["german shepherd"] },
-  { "value": "STANDARD_POODLE", "label": "스탠더드 푸들", "aliases": ["standard poodle"] },
-  { "value": "GREAT_PYRENEES", "label": "그레이트 피레니즈", "aliases": ["great pyrenees"] },
-  { "value": "DOBERMAN", "label": "도베르만", "aliases": ["doberman"] },
-  { "value": "ROTTWEILER", "label": "로트와일러", "aliases": ["rottweiler"] },
-  { "value": "BOXER", "label": "복서", "aliases": ["boxer"] },
   {
-    "value": "ALASKAN_MALAMUTE",
+    "value": "달마시안",
+    "label": "달마시안",
+    "aliases": ["dalmatian"]
+  },
+  {
+    "value": "아키타 이누",
+    "label": "아키타 이누",
+    "aliases": ["akita inu", "akita"]
+  },
+  {
+    "value": "불 테리어",
+    "label": "불 테리어",
+    "aliases": ["bull terrier"]
+  },
+  {
+    "value": "저먼 셰퍼드",
+    "label": "저먼 셰퍼드",
+    "aliases": ["german shepherd"]
+  },
+  {
+    "value": "스탠더드 푸들",
+    "label": "스탠더드 푸들",
+    "aliases": ["standard poodle"]
+  },
+  {
+    "value": "그레이트 피레니즈",
+    "label": "그레이트 피레니즈",
+    "aliases": ["great pyrenees"]
+  },
+  {
+    "value": "도베르만",
+    "label": "도베르만",
+    "aliases": ["doberman"]
+  },
+  {
+    "value": "로트와일러",
+    "label": "로트와일러",
+    "aliases": ["rottweiler"]
+  },
+  {
+    "value": "복서",
+    "label": "복서",
+    "aliases": ["boxer"]
+  },
+  {
+    "value": "알래스칸 말라뮤트",
     "label": "알래스칸 말라뮤트",
     "aliases": ["alaskan malamute", "malamute"]
   },
   {
-    "value": "BERNESE_MOUNTAIN_DOG",
+    "value": "버니즈 마운틴 도그",
     "label": "버니즈 마운틴 도그",
     "aliases": ["bernese mountain dog"]
   },
-  { "value": "SAINT_BERNARD", "label": "세인트 버나드", "aliases": ["saint bernard"] },
-  { "value": "GREAT_DANE", "label": "그레이트 데인", "aliases": ["great dane"] },
-  { "value": "MIXED", "label": "믹스견", "aliases": ["mixed", "mix"] },
-  { "value": "ETC", "label": "기타", "aliases": ["etc", "other"] }
+  {
+    "value": "세인트 버나드",
+    "label": "세인트 버나드",
+    "aliases": ["saint bernard"]
+  },
+  {
+    "value": "그레이트 데인",
+    "label": "그레이트 데인",
+    "aliases": ["great dane"]
+  },
+  {
+    "value": "기타",
+    "label": "기타",
+    "aliases": ["other"]
+  },
+  {
+    "value": "보스턴 테리어",
+    "label": "보스턴 테리어",
+    "aliases": ["boston terrier"]
+  },
+  {
+    "value": "이탈리안 그레이하운드",
+    "label": "이탈리안 그레이하운드",
+    "aliases": ["italian greyhound"]
+  },
+  {
+    "value": "아메리칸 코커 스패니얼",
+    "label": "아메리칸 코커 스패니얼",
+    "aliases": ["american cocker spaniel"]
+  },
+  {
+    "value": "카발리에 킹 찰스 스패니얼",
+    "label": "카발리에 킹 찰스 스패니얼",
+    "aliases": ["cavalier king charles spaniel"]
+  },
+  {
+    "value": "킹 찰스 스패니얼",
+    "label": "킹 찰스 스패니얼",
+    "aliases": ["king charles spaniel"]
+  },
+  {
+    "value": "꼬똥 드 툴레아",
+    "label": "꼬똥 드 툴레아",
+    "aliases": ["coton de tulear"]
+  },
+  {
+    "value": "삽살개",
+    "label": "삽살개",
+    "aliases": ["sapsali"]
+  },
+  {
+    "value": "풍산개",
+    "label": "풍산개",
+    "aliases": ["pungsan"]
+  },
+  {
+    "value": "동경이",
+    "label": "동경이",
+    "aliases": ["donggyeongi"]
+  },
+  {
+    "value": "제주개",
+    "label": "제주개",
+    "aliases": ["jeju dog"]
+  },
+  {
+    "value": "아메리칸 에스키모 도그",
+    "label": "아메리칸 에스키모 도그",
+    "aliases": ["american eskimo dog"]
+  },
+  {
+    "value": "오스트레일리안 캐틀 도그",
+    "label": "오스트레일리안 캐틀 도그",
+    "aliases": ["australian cattle dog"]
+  },
+  {
+    "value": "보더 테리어",
+    "label": "보더 테리어",
+    "aliases": ["border terrier"]
+  },
+  {
+    "value": "케언 테리어",
+    "label": "케언 테리어",
+    "aliases": ["cairn terrier"]
+  },
+  {
+    "value": "스코티시 테리어",
+    "label": "스코티시 테리어",
+    "aliases": ["scottish terrier"]
+  },
+  {
+    "value": "노퍽 테리어",
+    "label": "노퍽 테리어",
+    "aliases": ["norfolk terrier"]
+  },
+  {
+    "value": "노리치 테리어",
+    "label": "노리치 테리어",
+    "aliases": ["norwich terrier"]
+  },
+  {
+    "value": "에어데일 테리어",
+    "label": "에어데일 테리어",
+    "aliases": ["airedale terrier"]
+  },
+  {
+    "value": "아이리시 테리어",
+    "label": "아이리시 테리어",
+    "aliases": ["irish terrier"]
+  },
+  {
+    "value": "와이어 폭스 테리어",
+    "label": "와이어 폭스 테리어",
+    "aliases": ["wire fox terrier"]
+  },
+  {
+    "value": "스무스 폭스 테리어",
+    "label": "스무스 폭스 테리어",
+    "aliases": ["smooth fox terrier"]
+  },
+  {
+    "value": "스태퍼드셔 불 테리어",
+    "label": "스태퍼드셔 불 테리어",
+    "aliases": ["staffordshire bull terrier"]
+  },
+  {
+    "value": "아메리칸 스태퍼드셔 테리어",
+    "label": "아메리칸 스태퍼드셔 테리어",
+    "aliases": ["american staffordshire terrier"]
+  },
+  {
+    "value": "소프트 코티드 휘튼 테리어",
+    "label": "소프트 코티드 휘튼 테리어",
+    "aliases": ["soft coated wheaten terrier"]
+  },
+  {
+    "value": "베들링턴 테리어",
+    "label": "베들링턴 테리어",
+    "aliases": ["bedlington terrier"]
+  },
+  {
+    "value": "댄디 딘몬트 테리어",
+    "label": "댄디 딘몬트 테리어",
+    "aliases": ["dandie dinmont terrier"]
+  },
+  {
+    "value": "브뤼셀 그리펀",
+    "label": "브뤼셀 그리펀",
+    "aliases": ["brussels griffon"]
+  },
+  {
+    "value": "아펜핀셔",
+    "label": "아펜핀셔",
+    "aliases": ["affenpinscher"]
+  },
+  {
+    "value": "볼로네즈",
+    "label": "볼로네즈",
+    "aliases": ["bolognese"]
+  },
+  {
+    "value": "차이니즈 크레스티드",
+    "label": "차이니즈 크레스티드",
+    "aliases": ["chinese crested"]
+  },
+  {
+    "value": "재패니즈 친",
+    "label": "재패니즈 친",
+    "aliases": ["japanese chin"]
+  },
+  {
+    "value": "티베탄 스패니얼",
+    "label": "티베탄 스패니얼",
+    "aliases": ["tibetan spaniel"]
+  },
+  {
+    "value": "티베탄 테리어",
+    "label": "티베탄 테리어",
+    "aliases": ["tibetan terrier"]
+  },
+  {
+    "value": "티베탄 마스티프",
+    "label": "티베탄 마스티프",
+    "aliases": ["tibetan mastiff"]
+  },
+  {
+    "value": "키스혼드",
+    "label": "키스혼드",
+    "aliases": ["keeshond"]
+  },
+  {
+    "value": "스키퍼키",
+    "label": "스키퍼키",
+    "aliases": ["schipperke"]
+  },
+  {
+    "value": "바센지",
+    "label": "바센지",
+    "aliases": ["basenji"]
+  },
+  {
+    "value": "블러드하운드",
+    "label": "블러드하운드",
+    "aliases": ["bloodhound"]
+  },
+  {
+    "value": "보르조이",
+    "label": "보르조이",
+    "aliases": ["borzoi"]
+  },
+  {
+    "value": "살루키",
+    "label": "살루키",
+    "aliases": ["saluki"]
+  },
+  {
+    "value": "휘핏",
+    "label": "휘핏",
+    "aliases": ["whippet"]
+  },
+  {
+    "value": "그레이하운드",
+    "label": "그레이하운드",
+    "aliases": ["greyhound"]
+  },
+  {
+    "value": "아프간 하운드",
+    "label": "아프간 하운드",
+    "aliases": ["afghan hound"]
+  },
+  {
+    "value": "아이리시 울프하운드",
+    "label": "아이리시 울프하운드",
+    "aliases": ["irish wolfhound"]
+  },
+  {
+    "value": "파라오 하운드",
+    "label": "파라오 하운드",
+    "aliases": ["pharaoh hound"]
+  },
+  {
+    "value": "로디지안 리지백",
+    "label": "로디지안 리지백",
+    "aliases": ["rhodesian ridgeback"]
+  },
+  {
+    "value": "비즐라",
+    "label": "비즐라",
+    "aliases": ["vizsla"]
+  },
+  {
+    "value": "바이마라너",
+    "label": "바이마라너",
+    "aliases": ["weimaraner"]
+  },
+  {
+    "value": "저먼 쇼트헤어드 포인터",
+    "label": "저먼 쇼트헤어드 포인터",
+    "aliases": ["german shorthaired pointer"]
+  },
+  {
+    "value": "저먼 와이어헤어드 포인터",
+    "label": "저먼 와이어헤어드 포인터",
+    "aliases": ["german wirehaired pointer"]
+  },
+  {
+    "value": "잉글리시 포인터",
+    "label": "잉글리시 포인터",
+    "aliases": ["english pointer"]
+  },
+  {
+    "value": "잉글리시 세터",
+    "label": "잉글리시 세터",
+    "aliases": ["english setter"]
+  },
+  {
+    "value": "아이리시 세터",
+    "label": "아이리시 세터",
+    "aliases": ["irish setter"]
+  },
+  {
+    "value": "브리타니",
+    "label": "브리타니",
+    "aliases": ["brittany"]
+  },
+  {
+    "value": "잉글리시 스프링어 스패니얼",
+    "label": "잉글리시 스프링어 스패니얼",
+    "aliases": ["english springer spaniel"]
+  },
+  {
+    "value": "웨일스 스프링어 스패니얼",
+    "label": "웨일스 스프링어 스패니얼",
+    "aliases": ["welsh springer spaniel"]
+  },
+  {
+    "value": "클럼버 스패니얼",
+    "label": "클럼버 스패니얼",
+    "aliases": ["clumber spaniel"]
+  },
+  {
+    "value": "플랫 코티드 리트리버",
+    "label": "플랫 코티드 리트리버",
+    "aliases": ["flat coated retriever"]
+  },
+  {
+    "value": "체서피크 베이 리트리버",
+    "label": "체서피크 베이 리트리버",
+    "aliases": ["chesapeake bay retriever"]
+  },
+  {
+    "value": "포르투기즈 워터 도그",
+    "label": "포르투기즈 워터 도그",
+    "aliases": ["portuguese water dog"]
+  },
+  {
+    "value": "뉴펀들랜드",
+    "label": "뉴펀들랜드",
+    "aliases": ["newfoundland"]
+  },
+  {
+    "value": "레온베르거",
+    "label": "레온베르거",
+    "aliases": ["leonberger"]
+  },
+  {
+    "value": "마스티프",
+    "label": "마스티프",
+    "aliases": ["mastiff"]
+  },
+  {
+    "value": "불마스티프",
+    "label": "불마스티프",
+    "aliases": ["bullmastiff"]
+  },
+  {
+    "value": "케인 코르소",
+    "label": "케인 코르소",
+    "aliases": ["cane corso"]
+  },
+  {
+    "value": "블랙 러시안 테리어",
+    "label": "블랙 러시안 테리어",
+    "aliases": ["black russian terrier"]
+  },
+  {
+    "value": "자이언트 슈나우저",
+    "label": "자이언트 슈나우저",
+    "aliases": ["giant schnauzer"]
+  },
+  {
+    "value": "스탠더드 슈나우저",
+    "label": "스탠더드 슈나우저",
+    "aliases": ["standard schnauzer"]
+  },
+  {
+    "value": "저먼 핀셔",
+    "label": "저먼 핀셔",
+    "aliases": ["german pinscher"]
+  },
+  {
+    "value": "벨지안 말리노이즈",
+    "label": "벨지안 말리노이즈",
+    "aliases": ["belgian malinois"]
+  },
+  {
+    "value": "벨지안 터뷰런",
+    "label": "벨지안 터뷰런",
+    "aliases": ["belgian tervuren"]
+  },
+  {
+    "value": "벨지안 쉽독",
+    "label": "벨지안 쉽독",
+    "aliases": ["belgian sheepdog"]
+  },
+  {
+    "value": "보스롱",
+    "label": "보스롱",
+    "aliases": ["beauceron"]
+  },
+  {
+    "value": "비어디드 콜리",
+    "label": "비어디드 콜리",
+    "aliases": ["bearded collie"]
+  },
+  {
+    "value": "러프 콜리",
+    "label": "러프 콜리",
+    "aliases": ["rough collie"]
+  },
+  {
+    "value": "스무스 콜리",
+    "label": "스무스 콜리",
+    "aliases": ["smooth collie"]
+  },
+  {
+    "value": "올드 잉글리시 쉽독",
+    "label": "올드 잉글리시 쉽독",
+    "aliases": ["old english sheepdog"]
+  },
+  {
+    "value": "코몬도르",
+    "label": "코몬도르",
+    "aliases": ["komondor"]
+  },
+  {
+    "value": "쿠바스",
+    "label": "쿠바스",
+    "aliases": ["kuvasz"]
+  },
+  {
+    "value": "아나톨리안 셰퍼드",
+    "label": "아나톨리안 셰퍼드",
+    "aliases": ["anatolian shepherd"]
+  },
+  {
+    "value": "오스트레일리안 켈피",
+    "label": "오스트레일리안 켈피",
+    "aliases": ["australian kelpie"]
+  },
+  {
+    "value": "미니어처 불 테리어",
+    "label": "미니어처 불 테리어",
+    "aliases": ["miniature bull terrier"]
+  },
+  {
+    "value": "샤페이",
+    "label": "샤페이",
+    "aliases": ["shar pei"]
+  },
+  {
+    "value": "도고 아르헨티노",
+    "label": "도고 아르헨티노",
+    "aliases": ["dogo argentino"]
+  },
+  {
+    "value": "엑스올로이츠퀸틀",
+    "label": "엑스올로이츠퀸틀",
+    "aliases": ["xoloitzcuintli"]
+  }
 ]
