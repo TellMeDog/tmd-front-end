@@ -10,7 +10,7 @@ const STATUS_PIN_CLASS = {
   verify: 'pinVerify',
 };
 
-export default function KakaoMapView({ apiKey, userLocation, places, selectedPlace, onSelectPlace }) {
+export default function KakaoMapView({ apiKey, userLocation, places, selectedPlace, onSelectPlace, onBoundsChange }) {
   const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services'] });
   const mapRef = useRef(null);
 
@@ -19,6 +19,27 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
     if (!map || !userLocation) return;
     map.panTo(new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng));
   }, [userLocation]);
+
+  const emitBounds = useCallback(
+    (map) => {
+      const bounds = map.getBounds();
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      onBoundsChange?.({
+        sw: { lat: sw.getLat(), lng: sw.getLng() },
+        ne: { lat: ne.getLat(), lng: ne.getLng() },
+      });
+    },
+    [onBoundsChange],
+  );
+
+  const handleCreate = useCallback(
+    (map) => {
+      mapRef.current = map;
+      emitBounds(map);
+    },
+    [emitBounds],
+  );
 
   if (loading || error) {
     return (
@@ -35,9 +56,8 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
         level={5}
         isPanto
         className={styles.map}
-        onCreate={(map) => {
-          mapRef.current = map;
-        }}
+        onCreate={handleCreate}
+        onIdle={emitBounds}
       >
         <CustomOverlayMap position={userLocation}>
           <span className={styles.meMarker} />

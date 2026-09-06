@@ -1,7 +1,7 @@
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { getNearbyPlaces } from '../../api/places.api';
+import { getPlacesInBounds } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
@@ -10,24 +10,27 @@ import styles from '../shared/Pages.module.css';
 import KakaoMapPreview from './KakaoMapPreview';
 
 const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
-const NEARBY_CATEGORIES = ['카페', '음식점'];
-const PREVIEW_COUNT = 3;
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { location } = useCurrentLocation();
   const [nearbyPreview, setNearbyPreview] = useState([]);
+  const [previewBounds, setPreviewBounds] = useState(null);
 
   const handleSelectCategory = (category) => {
     navigate(category ? `/map?category=${encodeURIComponent(category)}` : '/map');
   };
 
+  const handlePreviewBoundsChange = useCallback((bounds) => {
+    setPreviewBounds(bounds);
+  }, []);
+
   useEffect(() => {
-    if (!location) return;
-    getNearbyPlaces(location, { categories: NEARBY_CATEGORIES }).then(({ data }) => {
-      setNearbyPreview(data.slice(0, PREVIEW_COUNT));
+    if (!previewBounds) return;
+    getPlacesInBounds(previewBounds, { origin: location }).then(({ data }) => {
+      setNearbyPreview(data);
     });
-  }, [location]);
+  }, [previewBounds, location]);
 
   return (
     <main className="page">
@@ -52,7 +55,11 @@ export default function HomePage() {
       <section>
         <Link to="/map" className={styles.mapPreview}>
           {KAKAO_MAP_KEY ? (
-            <KakaoMapPreview apiKey={KAKAO_MAP_KEY} places={nearbyPreview} />
+            <KakaoMapPreview
+              apiKey={KAKAO_MAP_KEY}
+              places={nearbyPreview}
+              onBoundsChange={handlePreviewBoundsChange}
+            />
           ) : (
             <span className={styles.mapPlaceholder}>지도 준비중</span>
           )}

@@ -139,8 +139,16 @@
     bottom: 0;
     width: auto;
     max-width: none;
-    max-height: 72%;
+    height: 50%;
+    max-height: 100%;
     border-radius: 20px 20px 0 0;
+    transition: height 0.25s ease;
+  }
+  .sheet.full {
+    height: 100%;
+  }
+  .sheet.dragging {
+    transition: none;
   }
   @keyframes slideIn {
     from {
@@ -152,6 +160,10 @@
   }
   .handle {
     display: block;
+  }
+  .header {
+    touch-action: none;
+    cursor: grab;
   }
   .photo {
     height: 140px;

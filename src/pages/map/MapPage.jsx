@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getNearbyPlaces } from '../../api/places.api';
+import { getPlacesInBounds } from '../../api/places.api';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import pageStyles from '../shared/Pages.module.css';
@@ -16,18 +16,25 @@ export default function MapPage() {
   const category = searchParams.get('category');
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [bounds, setBounds] = useState(null);
 
   const handleSelectCategory = (nextCategory) => {
     setSelectedId(null);
     setSearchParams(nextCategory ? { category: nextCategory } : {});
   };
 
+  const handleBoundsChange = useCallback((nextBounds) => {
+    setBounds(nextBounds);
+  }, []);
+
   useEffect(() => {
-    if (!location) return;
-    getNearbyPlaces(location, { categories: category ? [category] : undefined }).then(({ data }) => {
-      setNearbyPlaces(data);
-    });
-  }, [location, category]);
+    if (!bounds) return;
+    getPlacesInBounds(bounds, { origin: location, categories: category ? [category] : undefined }).then(
+      ({ data }) => {
+        setNearbyPlaces(data);
+      },
+    );
+  }, [bounds, location, category]);
 
   const selectedPlace = useMemo(
     () => nearbyPlaces.find((place) => place.id === selectedId) ?? null,
@@ -44,6 +51,7 @@ export default function MapPage() {
             places={nearbyPlaces}
             selectedPlace={selectedPlace}
             onSelectPlace={setSelectedId}
+            onBoundsChange={handleBoundsChange}
           />
         ) : (
           <span className={pageStyles.mapPlaceholder}>
