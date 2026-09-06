@@ -4,20 +4,20 @@ import { Link } from 'react-router-dom';
 import { getPets } from '../../api/pets.api';
 import { getApiErrorMessage } from '../../api/client';
 import { usePetStore } from '../../stores/pet.store';
-import { getPetBreedLabel, getPetSizeLabel } from '../../utils/pet';
+import { getPetBreedLabel, getPetImageSrc, getPetSizeLabel } from '../../utils/pet';
 import styles from '../shared/Pages.module.css';
+
 export default function MyPage() {
   const pets = usePetStore((state) => state.pets);
   const setPets = usePetStore((state) => state.setPets);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const representativePet = pets[0];
 
   useEffect(() => {
     let active = true;
     getPets()
       .then((data) => {
-        if (active) setPets(data);
+        if (active) setPets(Array.isArray(data) ? data : []);
       })
       .catch((requestError) => {
         if (active)
@@ -41,25 +41,38 @@ export default function MyPage() {
     <main className="page">
       <span className="eyebrow">MY PAGE</span>
       <h1 className="page-title">마이페이지</h1>
-      <section className={`card ${styles.profile}`}>
-        <div className={styles.avatar}>🐶</div>
-        <div>
-          <small>나의 반려동물</small>
-          {isLoading ? (
-            <p>불러오는 중...</p>
-          ) : representativePet ? (
-            <>
-              <h2>{representativePet.name}</h2>
-              <p>
-                {getPetBreedLabel(representativePet.breed)} ·{' '}
-                {getPetSizeLabel(representativePet.size)}
-              </p>
-            </>
-          ) : (
-            <p>등록된 반려동물이 없습니다.</p>
-          )}
-        </div>
-      </section>
+      <div className={styles.profileList}>
+        {isLoading ? (
+          <section className={`card ${styles.profile}`}>
+            <div className={styles.avatar}>🐶</div>
+            <div>
+              <small>나의 반려동물</small>
+              <p>불러오는 중...</p>
+            </div>
+          </section>
+        ) : pets.length > 0 ? (
+          pets.map((pet) => (
+            <section className={`card ${styles.profile}`} key={pet.petId}>
+              <PetAvatar pet={pet} />
+              <div>
+                <small>나의 반려동물</small>
+                <h2>{pet.name}</h2>
+                <p>
+                  {getPetBreedLabel(pet.breed)} · {getPetSizeLabel(pet.size)}
+                </p>
+              </div>
+            </section>
+          ))
+        ) : (
+          <section className={`card ${styles.profile}`}>
+            <div className={styles.avatar}>🐶</div>
+            <div>
+              <small>나의 반려동물</small>
+              <p>등록된 반려동물이 없습니다.</p>
+            </div>
+          </section>
+        )}
+      </div>
       {error && <p className="field-error">{error}</p>}
       <div className={styles.menu}>
         {menu.map(([Icon, label, to]) => (
@@ -71,5 +84,20 @@ export default function MyPage() {
         ))}
       </div>
     </main>
+  );
+}
+
+function PetAvatar({ pet }) {
+  const [imageFailed, setImageFailed] = useState(false);
+  const imageSrc = getPetImageSrc(pet.imageUrl);
+
+  return (
+    <div className={styles.avatar}>
+      {imageSrc && !imageFailed ? (
+        <img src={imageSrc} alt={`${pet.name} 사진`} onError={() => setImageFailed(true)} />
+      ) : (
+        '🐶'
+      )}
+    </div>
   );
 }

@@ -145,8 +145,13 @@
   align-items: center;
   gap: 12px;
 }
-.profile {
+.profileList {
   margin-top: 32px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 12px;
+}
+.profile {
   padding: 24px;
   display: flex;
   align-items: center;
@@ -160,6 +165,13 @@
   display: grid;
   place-items: center;
   font-size: 40px;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .simple {
   min-height: 400px;
@@ -224,6 +236,9 @@
     min-height: 0;
   }
   .menu {
+    grid-template-columns: 1fr;
+  }
+  .profileList {
     grid-template-columns: 1fr;
   }
 }
