@@ -24,6 +24,16 @@ body {
 button {
   color: inherit;
 }
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.simple-status {
+  min-height: 320px;
+  display: grid;
+  place-items: center;
+  color: var(--color-text-subtle);
+}
 .page {
   width: min(calc(100% - 48px), var(--content-width));
   margin: 0 auto;

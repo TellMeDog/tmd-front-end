@@ -1,15 +1,21 @@
 import { Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/icons/BrandLogo';
 import { login } from '../../api/auth.api';
+import { getApiErrorMessage } from '../../api/client';
+import { useAuthStore } from '../../stores/auth.store';
 import styles from '../shared/Auth.module.css';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const setSession = useAuthStore((state) => state.setSession);
+  const clearSession = useAuthStore((state) => state.clearSession);
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const update = (event) => {
     setForm({ ...form, [event.target.name]: event.target.value });
@@ -22,8 +28,17 @@ export default function LoginPage() {
       setError('이메일과 비밀번호를 모두 입력해 주세요.');
       return;
     }
-    await login(form);
-    navigate('/');
+    setIsSubmitting(true);
+    try {
+      const { accessToken } = await login(form);
+      setSession(accessToken);
+      navigate(location.state?.from ?? '/', { replace: true });
+    } catch (requestError) {
+      clearSession();
+      setError(getApiErrorMessage(requestError, '로그인에 실패했습니다.'));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -88,8 +103,8 @@ export default function LoginPage() {
               </div>
             </div>
             {error && <p className="field-error">{error}</p>}
-            <button className="button button--primary" type="submit">
-              로그인
+            <button className="button button--primary" type="submit" disabled={isSubmitting}>
+              {isSubmitting ? '로그인 중...' : '로그인'}
             </button>
           </form>
           <div className={styles.switch}>

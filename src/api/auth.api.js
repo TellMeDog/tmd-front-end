@@ -1,5 +1,22 @@
-import { mockUser } from '../mocks/data/auth';
-import { mockRequest } from './client';
+import { apiRequest } from './client';
 
-export const login = ({ email }) => mockRequest({ ...mockUser, email, accessToken: 'mock-token' });
-export const signup = ({ email, nickname }) => mockRequest({ ...mockUser, email, nickname });
+export const sendVerificationCode = (email) =>
+  apiRequest('/auth/send-verification-code', { method: 'POST', auth: false, body: { email } });
+
+export const verifyEmail = (email, code) =>
+  apiRequest('/auth/verify-email', { method: 'POST', auth: false, body: { email, code } });
+
+export const signup = ({ email, nickname, password, confirmPassword }) =>
+  apiRequest('/auth/signup', {
+    method: 'POST',
+    auth: false,
+    body: { email, nickname, password, confirmPassword },
+  });
+
+export const login = ({ email, password }) =>
+  apiRequest('/auth/login', { method: 'POST', auth: false, body: { email, password } });
+
+export const reissue = () =>
+  apiRequest('/auth/reissue', { method: 'POST', auth: false, retryOnUnauthorized: false });
+
+export const logout = () => apiRequest('/auth/logout', { method: 'POST' });

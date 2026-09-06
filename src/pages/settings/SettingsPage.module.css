@@ -1,0 +1,16 @@
+.actions {
+  margin-top: 32px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.deleteButton {
+  background: #fff1f1;
+  color: var(--color-danger);
+  border: 1px solid #ffd5d5;
+}
+@media (max-width: 767px) {
+  .actions {
+    display: grid;
+  }
+}

@@ -11,6 +11,8 @@ import VisitPrepPage from '../pages/visit-prep/VisitPrepPage';
 import VisitReportPage from '../pages/visit-report/VisitReportPage';
 import PetManagePage from '../pages/pet-manage/PetManagePage';
 import MyReportsPage from '../pages/my-reports/MyReportsPage';
+import SettingsPage from '../pages/settings/SettingsPage';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 
 export default function App() {
   return (
@@ -18,13 +20,16 @@ export default function App() {
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="map" element={<MapPage />} />
-        <Route path="favorites" element={<FavoritesPage />} />
-        <Route path="my" element={<MyPage />} />
-        <Route path="my/pets" element={<PetManagePage />} />
-        <Route path="my/reports" element={<MyReportsPage />} />
         <Route path="places/:placeId" element={<PlaceDetailPage />} />
         <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
         <Route path="places/:placeId/report" element={<VisitReportPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="my" element={<MyPage />} />
+          <Route path="my/pets" element={<PetManagePage />} />
+          <Route path="my/reports" element={<MyReportsPage />} />
+          <Route path="my/settings" element={<SettingsPage />} />
+        </Route>
       </Route>
       <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />

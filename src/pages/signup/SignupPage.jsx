@@ -2,7 +2,8 @@ import { Check, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/icons/BrandLogo';
-import { signup } from '../../api/auth.api';
+import { sendVerificationCode, signup, verifyEmail } from '../../api/auth.api';
+import { getApiErrorMessage } from '../../api/client';
 import styles from '../shared/Auth.module.css';
 
 const initialForm = { email: '', nickname: '', password: '', confirmPassword: '' };
@@ -12,18 +13,65 @@ export default function SignupPage() {
   const [form, setForm] = useState(initialForm);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [code, setCode] = useState('');
+  const [verificationSent, setVerificationSent] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
+  const [pendingAction, setPendingAction] = useState('');
 
   const update = (event) => {
-    setForm({ ...form, [event.target.name]: event.target.value });
+    const { name, value } = event.target;
+    setForm({ ...form, [name]: value });
+    if (name === 'email') {
+      setCode('');
+      setVerificationSent(false);
+      setEmailVerified(false);
+    }
     setError('');
+  };
+
+  const sendCode = async () => {
+    if (!form.email) return setError('이메일을 입력해 주세요.');
+    setPendingAction('send');
+    setError('');
+    try {
+      await sendVerificationCode(form.email);
+      setVerificationSent(true);
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, '인증번호 발송에 실패했습니다.'));
+    } finally {
+      setPendingAction('');
+    }
+  };
+
+  const checkCode = async () => {
+    if (!code) return setError('인증번호를 입력해 주세요.');
+    setPendingAction('verify');
+    setError('');
+    try {
+      await verifyEmail(form.email, code);
+      setEmailVerified(true);
+    } catch (requestError) {
+      setEmailVerified(false);
+      setError(getApiErrorMessage(requestError, '이메일 인증에 실패했습니다.'));
+    } finally {
+      setPendingAction('');
+    }
   };
 
   const submit = async (event) => {
     event.preventDefault();
     if (Object.values(form).some((value) => !value)) return setError('모든 항목을 입력해 주세요.');
+    if (!emailVerified) return setError('이메일 인증을 완료해 주세요.');
     if (form.password !== form.confirmPassword) return setError('비밀번호가 일치하지 않아요.');
-    await signup(form);
-    navigate('/login');
+    setPendingAction('signup');
+    try {
+      await signup(form);
+      navigate('/login', { replace: true });
+    } catch (requestError) {
+      setError(getApiErrorMessage(requestError, '회원가입에 실패했습니다.'));
+    } finally {
+      setPendingAction('');
+    }
   };
 
   return (
@@ -68,15 +116,51 @@ export default function SignupPage() {
           <form onSubmit={submit} noValidate>
             <div className="field">
               <label htmlFor="email">이메일</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                value={form.email}
-                onChange={update}
-                placeholder="example@email.com"
-              />
+              <div className={styles.inlineField}>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={form.email}
+                  onChange={update}
+                  placeholder="example@email.com"
+                  disabled={emailVerified}
+                />
+                <button
+                  type="button"
+                  onClick={sendCode}
+                  disabled={pendingAction !== '' || emailVerified}
+                >
+                  {verificationSent ? '재발송' : '인증번호 받기'}
+                </button>
+              </div>
             </div>
+            {verificationSent && (
+              <div className="field">
+                <label htmlFor="verificationCode">인증번호</label>
+                <div className={styles.inlineField}>
+                  <input
+                    id="verificationCode"
+                    inputMode="numeric"
+                    value={code}
+                    onChange={(event) => {
+                      setCode(event.target.value);
+                      setEmailVerified(false);
+                      setError('');
+                    }}
+                    placeholder="6자리 인증번호"
+                    disabled={emailVerified}
+                  />
+                  <button
+                    type="button"
+                    onClick={checkCode}
+                    disabled={pendingAction !== '' || emailVerified}
+                  >
+                    {emailVerified ? '인증 완료' : '확인'}
+                  </button>
+                </div>
+              </div>
+            )}
             <div className="field">
               <label htmlFor="nickname">닉네임</label>
               <input
@@ -96,7 +180,7 @@ export default function SignupPage() {
                   type={showPassword ? 'text' : 'password'}
                   value={form.password}
                   onChange={update}
-                  placeholder="8~16자 영문, 숫자, 특수문자"
+                  placeholder="8~16자 영문 대소문자, 숫자, 특수문자"
                 />
                 <button
                   type="button"
@@ -119,8 +203,12 @@ export default function SignupPage() {
               />
             </div>
             {error && <p className="field-error">{error}</p>}
-            <button className="button button--primary" type="submit">
-              가입하기
+            <button
+              className="button button--primary"
+              type="submit"
+              disabled={pendingAction !== ''}
+            >
+              {pendingAction === 'signup' ? '가입 중...' : '가입하기'}
             </button>
           </form>
           <div className={styles.switch}>

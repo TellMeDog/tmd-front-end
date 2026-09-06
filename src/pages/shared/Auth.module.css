@@ -135,6 +135,23 @@
   display: grid;
   place-items: center;
 }
+.inlineField {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+}
+.inlineField button {
+  min-width: 108px;
+  border: 1px solid var(--color-brand-500);
+  border-radius: var(--radius-12);
+  background: var(--color-white);
+  color: var(--color-brand-700);
+  padding: 0 14px;
+  font-weight: 700;
+}
+.inlineField button:disabled {
+  opacity: 0.55;
+}
 .switch {
   margin-top: 24px;
   text-align: center;
