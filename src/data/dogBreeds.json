@@ -688,5 +688,25 @@
     "value": "엑스올로이츠퀸틀",
     "label": "엑스올로이츠퀸틀",
     "aliases": ["xoloitzcuintli"]
+  },
+  {
+    "value": "도사견",
+    "label": "도사견",
+    "aliases": ["tosa inu", "tosa", "도사 이누", "토사견"]
+  },
+  {
+    "value": "아메리칸 핏불 테리어",
+    "label": "아메리칸 핏불 테리어",
+    "aliases": ["american pit bull terrier", "pit bull", "핏불", "아메리칸 핏불테리어"]
+  },
+  {
+    "value": "오브차카",
+    "label": "오브차카",
+    "aliases": ["ovcharka", "caucasian ovcharka", "코카시안 오브차카"]
+  },
+  {
+    "value": "울프독",
+    "label": "울프독",
+    "aliases": ["wolf dog", "wolfdog", "울프 도그"]
   }
 ]

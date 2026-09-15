@@ -11,7 +11,7 @@ export default function PetEquipmentFields({ values, onChange }) {
   return (
     <fieldset className={styles.fieldset}>
       <legend>보유 용품</legend>
-      <p>현재 준비되어 있는 용품을 선택해 주세요.</p>
+      <p>현재 준비되어 있는 용품을 선택해 주세요. (배변 봉투는 필수입니다)</p>
       <div className={styles.options}>
         {EQUIPMENT.map(([key, label]) => {
           const checked = Boolean(values[key]);
