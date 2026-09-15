@@ -5,10 +5,14 @@ import { useAuthStore } from '../../stores/auth.store';
 let restorePromise = null;
 
 function restoreSession() {
+  if (localStorage.getItem('tmd:signed-out') === 'true') {
+    useAuthStore.getState().clearSession({ signedOut: true });
+    return Promise.resolve();
+  }
   if (!restorePromise) {
     restorePromise = reissue()
-      .then(({ accessToken }) => {
-        useAuthStore.getState().setSession(accessToken);
+      .then((session) => {
+        useAuthStore.getState().setSession(session);
       })
       .catch(() => {
         useAuthStore.getState().clearSession();

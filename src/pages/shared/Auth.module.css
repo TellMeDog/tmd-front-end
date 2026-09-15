@@ -152,6 +152,36 @@
 .inlineField button:disabled {
   opacity: 0.55;
 }
+.verificationInput {
+  position: relative;
+  min-width: 0;
+}
+.verificationInput input {
+  padding-right: 84px;
+}
+.timer {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  color: var(--color-brand-600);
+  font-size: var(--font-12);
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  pointer-events: none;
+}
+.timer.verified {
+  color: var(--color-success);
+}
+.timer.expired,
+.verificationGuide.expired {
+  color: var(--color-danger);
+}
+.verificationGuide {
+  margin-top: 6px;
+  color: var(--color-text-subtle);
+  font-size: var(--font-12);
+}
 .switch {
   margin-top: 24px;
   text-align: center;

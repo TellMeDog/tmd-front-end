@@ -18,5 +18,3 @@ export const login = ({ email, password }) =>
 
 export const reissue = () =>
   apiRequest('/auth/reissue', { method: 'POST', auth: false, retryOnUnauthorized: false });
-
-export const logout = () => apiRequest('/auth/logout', { method: 'POST' });

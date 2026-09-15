@@ -1,12 +1,20 @@
 import { Check, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/icons/BrandLogo';
 import { sendVerificationCode, signup, verifyEmail } from '../../api/auth.api';
 import { getApiErrorMessage } from '../../api/client';
+import FeedbackModal from '../../components/feedback/FeedbackModal';
 import styles from '../shared/Auth.module.css';
 
 const initialForm = { email: '', nickname: '', password: '', confirmPassword: '' };
+const VERIFICATION_DURATION_SECONDS = 5 * 60;
+
+function formatRemainingTime(seconds) {
+  const minutes = Math.floor(seconds / 60);
+  const remainingSeconds = seconds % 60;
+  return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+}
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -17,6 +25,27 @@ export default function SignupPage() {
   const [verificationSent, setVerificationSent] = useState(false);
   const [emailVerified, setEmailVerified] = useState(false);
   const [pendingAction, setPendingAction] = useState('');
+  const [notice, setNotice] = useState(null);
+  const [verificationExpiresAt, setVerificationExpiresAt] = useState(null);
+  const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const isCodeExpired = verificationSent && !emailVerified && remainingSeconds === 0;
+
+  useEffect(() => {
+    if (!verificationExpiresAt || emailVerified) return undefined;
+
+    const updateRemainingTime = () => {
+      const nextRemainingSeconds = Math.max(
+        0,
+        Math.ceil((verificationExpiresAt - Date.now()) / 1000),
+      );
+      setRemainingSeconds(nextRemainingSeconds);
+      if (nextRemainingSeconds === 0) window.clearInterval(intervalId);
+    };
+
+    const intervalId = window.setInterval(updateRemainingTime, 1000);
+    updateRemainingTime();
+    return () => window.clearInterval(intervalId);
+  }, [emailVerified, verificationExpiresAt]);
 
   const update = (event) => {
     const { name, value } = event.target;
@@ -25,6 +54,8 @@ export default function SignupPage() {
       setCode('');
       setVerificationSent(false);
       setEmailVerified(false);
+      setVerificationExpiresAt(null);
+      setRemainingSeconds(0);
     }
     setError('');
   };
@@ -35,7 +66,16 @@ export default function SignupPage() {
     setError('');
     try {
       await sendVerificationCode(form.email);
+      setCode('');
       setVerificationSent(true);
+      setEmailVerified(false);
+      setRemainingSeconds(VERIFICATION_DURATION_SECONDS);
+      setVerificationExpiresAt(Date.now() + VERIFICATION_DURATION_SECONDS * 1000);
+      setNotice({
+        tone: 'brand',
+        title: '인증번호를 보냈어요',
+        description: `${form.email}로 전송된 인증번호를 5분 안에 입력해 주세요.`,
+      });
     } catch (requestError) {
       setError(getApiErrorMessage(requestError, '인증번호 발송에 실패했습니다.'));
     } finally {
@@ -45,11 +85,17 @@ export default function SignupPage() {
 
   const checkCode = async () => {
     if (!code) return setError('인증번호를 입력해 주세요.');
+    if (isCodeExpired) return setError('인증 시간이 만료되었습니다. 인증번호를 재발송해 주세요.');
     setPendingAction('verify');
     setError('');
     try {
       await verifyEmail(form.email, code);
       setEmailVerified(true);
+      setNotice({
+        tone: 'success',
+        title: '이메일 인증 완료',
+        description: '이제 나머지 정보를 입력하고 회원가입을 완료해 주세요.',
+      });
     } catch (requestError) {
       setEmailVerified(false);
       setError(getApiErrorMessage(requestError, '이메일 인증에 실패했습니다.'));
@@ -66,6 +112,7 @@ export default function SignupPage() {
     setPendingAction('signup');
     try {
       await signup(form);
+      localStorage.setItem('tmd:nickname', form.nickname.trim());
       navigate('/login', { replace: true });
     } catch (requestError) {
       setError(getApiErrorMessage(requestError, '회원가입에 실패했습니다.'));
@@ -139,26 +186,43 @@ export default function SignupPage() {
               <div className="field">
                 <label htmlFor="verificationCode">인증번호</label>
                 <div className={styles.inlineField}>
-                  <input
-                    id="verificationCode"
-                    inputMode="numeric"
-                    value={code}
-                    onChange={(event) => {
-                      setCode(event.target.value);
-                      setEmailVerified(false);
-                      setError('');
-                    }}
-                    placeholder="6자리 인증번호"
-                    disabled={emailVerified}
-                  />
+                  <div className={styles.verificationInput}>
+                    <input
+                      id="verificationCode"
+                      inputMode="numeric"
+                      value={code}
+                      onChange={(event) => {
+                        setCode(event.target.value);
+                        setEmailVerified(false);
+                        setError('');
+                      }}
+                      placeholder="6자리 인증번호"
+                      disabled={emailVerified || isCodeExpired}
+                    />
+                    <span
+                      className={`${styles.timer} ${isCodeExpired ? styles.expired : ''} ${emailVerified ? styles.verified : ''}`}
+                      aria-live="polite"
+                    >
+                      {emailVerified
+                        ? '인증 완료'
+                        : isCodeExpired
+                          ? '시간 만료'
+                          : formatRemainingTime(remainingSeconds)}
+                    </span>
+                  </div>
                   <button
                     type="button"
                     onClick={checkCode}
-                    disabled={pendingAction !== '' || emailVerified}
+                    disabled={pendingAction !== '' || emailVerified || isCodeExpired}
                   >
                     {emailVerified ? '인증 완료' : '확인'}
                   </button>
                 </div>
+                <p className={`${styles.verificationGuide} ${isCodeExpired ? styles.expired : ''}`}>
+                  {isCodeExpired
+                    ? '인증 시간이 만료되었어요. 위의 재발송 버튼을 눌러주세요.'
+                    : '인증번호는 발송 후 5분 동안 유효해요.'}
+                </p>
               </div>
             )}
             <div className="field">
@@ -216,6 +280,13 @@ export default function SignupPage() {
           </div>
         </div>
       </section>
+      <FeedbackModal
+        open={Boolean(notice)}
+        tone={notice?.tone}
+        title={notice?.title}
+        description={notice?.description}
+        onClose={() => setNotice(null)}
+      />
     </main>
   );
 }

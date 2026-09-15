@@ -2,9 +2,6 @@ import { ChevronRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import BrandLogo from '../icons/BrandLogo';
 import { useAuthStore } from '../../stores/auth.store';
-import { usePetStore } from '../../stores/pet.store';
-import { getPets } from '../../api/pets.api';
-import { useEffect } from 'react';
 import styles from './Layout.module.css';
 
 const links = [
@@ -15,17 +12,7 @@ const links = [
 
 export default function DesktopHeader() {
   const accessToken = useAuthStore((state) => state.accessToken);
-  const pets = usePetStore((state) => state.pets);
-  const setPets = usePetStore((state) => state.setPets);
-
-  useEffect(() => {
-    if (!accessToken) return;
-    getPets()
-      .then(setPets)
-      .catch(() => {});
-  }, [accessToken, setPets]);
-
-  const profileLabel = pets[0]?.name ? `${pets[0].name} 보호자` : '마이페이지';
+  const nickname = useAuthStore((state) => state.nickname);
 
   return (
     <header className={styles.desktopHeader}>
@@ -44,8 +31,8 @@ export default function DesktopHeader() {
           ))}
         </nav>
         <div className={styles.headerActions}>
-          <NavLink className={styles.profileButton} to="/my">
-            <span>{profileLabel}</span>
+          <NavLink className={styles.profileButton} to={accessToken ? '/my' : '/login'}>
+            <span>{accessToken ? (nickname ?? '마이페이지') : '로그인'}</span>
             <ChevronRight size={16} />
           </NavLink>
         </div>
