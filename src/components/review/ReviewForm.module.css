@@ -1,0 +1,90 @@
+.form {
+  display: grid;
+  gap: 24px;
+}
+.form fieldset {
+  display: grid;
+  gap: 12px;
+}
+.form legend,
+.selectLabel,
+.contentLabel {
+  font-weight: 700;
+}
+.selectLabel,
+.contentLabel {
+  display: grid;
+  gap: 8px;
+}
+.selectLabel select,
+.form input,
+.form textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  background: var(--color-white);
+  padding: 12px 16px;
+}
+.feedbacks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.feedbacks button {
+  min-height: 72px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  background: var(--color-white);
+  display: grid;
+  place-items: center;
+  gap: 4px;
+}
+.feedbacks button.active {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-50);
+  color: var(--color-brand-600);
+}
+.reasons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.reasons label {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+.imageField {
+  min-height: 52px;
+  padding: 0 16px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-12);
+  color: var(--color-text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+.imageField input {
+  display: none;
+}
+@media (max-width: 560px) {
+  .feedbacks {
+    grid-template-columns: 1fr;
+  }
+  .feedbacks button {
+    min-height: 56px;
+    display: flex;
+    justify-content: flex-start;
+    padding: 0 16px;
+  }
+}

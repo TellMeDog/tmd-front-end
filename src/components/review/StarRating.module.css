@@ -1,0 +1,13 @@
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--color-star);
+}
+.rating button {
+  padding: 2px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  line-height: 0;
+}

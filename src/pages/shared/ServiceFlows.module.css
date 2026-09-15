@@ -88,6 +88,10 @@
   margin: 8px 0;
   font-size: 28px;
 }
+.reviewFormPanel {
+  margin-top: 16px;
+  padding: 28px;
+}
 .progress {
   height: 8px;
   background: #eceeea;
