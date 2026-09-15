@@ -25,6 +25,7 @@
   background: var(--color-brand-50);
 }
 .trigger:focus-visible,
+.trigger:focus-within,
 .trigger.open {
   border-color: var(--color-brand-500);
   box-shadow: 0 0 0 3px rgba(246, 149, 28, 0.14);
@@ -40,6 +41,41 @@
   color: var(--color-brand-600);
   transform: rotate(180deg);
 }
+.searchTrigger {
+  position: relative;
+  padding: 0;
+}
+.searchTrigger .searchInput {
+  width: 100%;
+  min-height: 42px;
+  padding: 0 44px 0 16px;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: var(--color-text);
+  outline: none;
+  font: inherit;
+  font-weight: 700;
+}
+.searchInput::placeholder {
+  color: var(--color-text-subtle);
+  font-weight: 500;
+}
+.toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  display: grid;
+  place-items: center;
+}
+.trigger .toggle svg {
+  position: static;
+}
 .placeholder {
   color: var(--color-text-subtle);
 }
@@ -48,9 +84,7 @@
   z-index: 80;
   top: calc(100% + 8px);
   left: 0;
-  width: max-content;
-  min-width: 100%;
-  max-width: min(280px, calc(100vw - 32px));
+  width: 100%;
   max-height: 240px;
   padding: 6px;
   overflow-y: auto;
@@ -62,6 +96,10 @@
 }
 .options::-webkit-scrollbar {
   display: none;
+}
+.options.top {
+  top: auto;
+  bottom: calc(100% + 8px);
 }
 .option {
   width: 100%;
@@ -86,4 +124,21 @@
 .option svg {
   flex: none;
   color: var(--color-brand-500);
+}
+.optionText {
+  min-width: 0;
+  display: grid;
+}
+.optionText small {
+  overflow: hidden;
+  color: var(--color-text-subtle);
+  font-size: var(--font-12);
+  font-weight: 500;
+  text-overflow: ellipsis;
+}
+.empty {
+  padding: 16px 12px;
+  color: var(--color-text-subtle);
+  text-align: center;
+  font-size: var(--font-12);
 }

@@ -85,67 +85,6 @@
   text-align: center;
   font-size: 12px;
 }
-.combobox {
-  position: relative;
-}
-.comboboxInput {
-  position: relative;
-}
-.comboboxInput input {
-  padding-right: 48px;
-}
-.comboboxInput button {
-  position: absolute;
-  top: 6px;
-  right: 6px;
-  width: 40px;
-  height: 40px;
-  border: 0;
-  background: transparent;
-  display: grid;
-  place-items: center;
-}
-.options {
-  position: absolute;
-  top: auto;
-  bottom: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  z-index: 30;
-  max-height: 220px;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-12);
-  background: var(--color-white);
-  box-shadow: var(--shadow-sm);
-}
-.options::-webkit-scrollbar {
-  display: none;
-}
-.options button {
-  width: 100%;
-  padding: 12px 14px;
-  border: 0;
-  background: var(--color-white);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  text-align: left;
-}
-.options button:hover {
-  background: var(--color-brand-50);
-}
-.options small,
-.noOption {
-  color: var(--color-text-subtle);
-  font-size: 11px;
-}
-.noOption {
-  padding: 16px;
-}
 .weightInput {
   position: relative;
 }
