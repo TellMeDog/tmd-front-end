@@ -10,8 +10,9 @@ import styles from '../shared/Pages.module.css';
 export default function MyPage() {
   const pets = usePetStore((state) => state.pets);
   const setPets = usePetStore((state) => state.setPets);
+  const selectedPetId = usePetStore((state) => state.selectedPetId);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(pets.length === 0);
 
   useEffect(() => {
     let active = true;
@@ -34,7 +35,7 @@ export default function MyPage() {
   const menu = [
     [PawPrint, '반려동물 관리', '/my/pets'],
     [Heart, '저장한 장소', '/favorites'],
-    [ClipboardCheck, '내 방문 제보', '/my/reports'],
+    [ClipboardCheck, '내 리뷰', selectedPetId ? `/my/reviews/${selectedPetId}` : '/my/reviews'],
     [Settings, '설정', '/my/settings'],
   ];
   return (
@@ -42,7 +43,7 @@ export default function MyPage() {
       <span className="eyebrow">MY PAGE</span>
       <h1 className="page-title">마이페이지</h1>
       <div className={styles.profileList}>
-        {isLoading ? (
+        {isLoading && pets.length === 0 ? (
           <section className={`card ${styles.profile}`}>
             <div className={styles.avatar}>🐶</div>
             <div>
@@ -52,16 +53,21 @@ export default function MyPage() {
           </section>
         ) : pets.length > 0 ? (
           pets.map((pet) => (
-            <section className={`card ${styles.profile}`} key={pet.petId}>
+            <Link
+              className={`card ${styles.profile}`}
+              key={pet.petId}
+              to={`/my/pets/${pet.petId}/edit`}
+            >
               <PetAvatar pet={pet} />
               <div>
                 <small>나의 반려동물</small>
                 <h2>{pet.name}</h2>
                 <p>
-                  {getPetBreedLabel(pet.breed)} · {getPetSizeLabel(pet.size)}
+                  {getPetBreedLabel(pet.breed)} · {getPetSizeLabel(pet.weight)} · {pet.weight}kg
                 </p>
               </div>
-            </section>
+              <ChevronRight size={20} style={{ marginLeft: 'auto' }} />
+            </Link>
           ))
         ) : (
           <section className={`card ${styles.profile}`}>

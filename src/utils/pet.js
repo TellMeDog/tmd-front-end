@@ -34,7 +34,15 @@ export const getPetBreedLabel = (breed) =>
 
 export function getPetImageSrc(imageUrl) {
   if (!imageUrl) return '';
-  if (/^(https?:|blob:|data:)/.test(imageUrl)) return imageUrl;
-  const baseUrl = import.meta.env.VITE_IMAGE_BASE_URL?.replace(/\/$/, '');
-  return baseUrl ? `${baseUrl}/${imageUrl.replace(/^\//, '')}` : '';
+  if (/^(blob:|data:)/.test(imageUrl)) return imageUrl;
+
+  if (/^https?:/.test(imageUrl)) {
+    const normalizedUrl = new URL(imageUrl);
+    normalizedUrl.pathname = normalizedUrl.pathname.replace(/\/{2,}/g, '/');
+    return normalizedUrl.toString();
+  }
+
+  const baseUrl = import.meta.env.VITE_IMAGE_BASE_URL?.replace(/\/+$/, '');
+  const imagePath = imageUrl.replace(/^\/+/, '');
+  return baseUrl ? `${baseUrl}/${imagePath}` : '';
 }

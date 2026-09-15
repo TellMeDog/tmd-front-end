@@ -1,14 +1,18 @@
 import { ApiError, apiRequest } from './client';
 
-export const getPresignedUrl = (file) =>
+export const getPresignedUrl = (file, usage) =>
   apiRequest('/images/presigned-url', {
     method: 'POST',
     body: {
+      usage,
       filename: file.name,
       contentType: file.type,
       fileSize: file.size,
     },
   });
+
+export const completeUpload = (uploadId) =>
+  apiRequest(`/images/uploads/${uploadId}/complete`, { method: 'POST' });
 
 export async function uploadToPresignedUrl(file, { presignedUrl, requiredHeaders }) {
   let response;
@@ -25,4 +29,11 @@ export async function uploadToPresignedUrl(file, { presignedUrl, requiredHeaders
   if (!response.ok) {
     throw new ApiError('이미지 업로드에 실패했습니다.', { status: response.status });
   }
+}
+
+export async function uploadImage(file, usage) {
+  const presignedData = await getPresignedUrl(file, usage);
+  await uploadToPresignedUrl(file, presignedData);
+  await completeUpload(presignedData.uploadId);
+  return presignedData.uploadId;
 }

@@ -1,10 +1,11 @@
 import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getPresignedUrl, uploadToPresignedUrl } from '../../api/images.api';
+import { uploadImage } from '../../api/images.api';
 import { createPets, updatePet } from '../../api/pets.api';
 import { getApiErrorMessage } from '../../api/client';
 import { getPetImageSrc, getPetSizeLabel } from '../../utils/pet';
 import BreedCombobox from './BreedCombobox';
+import PetEquipmentFields from './PetEquipmentFields';
 import styles from './PetFormModal.module.css';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
@@ -15,12 +16,15 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
   const [name, setName] = useState(pet?.name ?? '');
   const [breed, setBreed] = useState(pet?.breed ?? '');
   const [weight, setWeight] = useState(() => {
-    const currentSize = Number(pet?.size);
-    return Number.isFinite(currentSize) ? String(currentSize) : '';
+    const currentWeight = Number(pet?.weight);
+    return Number.isFinite(currentWeight) ? String(currentWeight) : '';
   });
+  const [hasMuzzle, setHasMuzzle] = useState(pet?.hasMuzzle ?? false);
+  const [hasLeash, setHasLeash] = useState(pet?.hasLeash ?? false);
+  const [hasCarrier, setHasCarrier] = useState(pet?.hasCarrier ?? false);
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(() => getPetImageSrc(pet?.imageUrl));
-  const [uploadedImageKey, setUploadedImageKey] = useState('');
+  const [uploadedImageId, setUploadedImageId] = useState('');
   const [pendingStep, setPendingStep] = useState('');
   const [error, setError] = useState('');
 
@@ -47,7 +51,7 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
 
     if (previewUrl.startsWith('blob:')) URL.revokeObjectURL(previewUrl);
     setImageFile(file);
-    setUploadedImageKey('');
+    setUploadedImageId('');
     setPreviewUrl(URL.createObjectURL(file));
     setError('');
   };
@@ -65,22 +69,23 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
 
     setError('');
     try {
-      let imageKey = uploadedImageKey;
-      if (imageFile && !imageKey) {
+      let imageUploadId = uploadedImageId;
+      if (imageFile && !imageUploadId) {
         setPendingStep('이미지 업로드 준비 중...');
-        const presignedData = await getPresignedUrl(imageFile);
-        setPendingStep('이미지 업로드 중...');
-        await uploadToPresignedUrl(imageFile, presignedData);
-        imageKey = presignedData.imageKey;
-        setUploadedImageKey(imageKey);
+        imageUploadId = await uploadImage(imageFile, 'PET');
+        setUploadedImageId(imageUploadId);
       }
 
       const payload = {
         name: name.trim(),
         breed: breed.trim(),
-        size: numericWeight === null ? pet.size : numericWeight,
-        imageUrl: imageKey || pet?.imageUrl || null,
+        weight: numericWeight,
+        imageUploadId: imageUploadId || null,
+        hasMuzzle,
+        hasLeash,
+        hasCarrier,
       };
+      if (isEdit) payload.removeImage = false;
 
       setPendingStep(isEdit ? '반려동물 수정 중...' : '반려동물 등록 중...');
       const savedPet = isEdit
@@ -138,6 +143,18 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
               placeholder="반려동물 이름"
             />
           </div>
+
+          <PetEquipmentFields
+            values={{ hasLeash, hasMuzzle, hasCarrier }}
+            onChange={(key, checked) => {
+              const setters = {
+                hasLeash: setHasLeash,
+                hasMuzzle: setHasMuzzle,
+                hasCarrier: setHasCarrier,
+              };
+              setters[key](checked);
+            }}
+          />
           <div className="field">
             <label htmlFor="petBreed">견종</label>
             <BreedCombobox value={breed} onChange={setBreed} disabled={Boolean(pendingStep)} />
@@ -154,7 +171,7 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
                 value={weight}
                 onChange={(event) => setWeight(event.target.value)}
                 placeholder={
-                  isEdit ? `현재 ${getPetSizeLabel(pet.size)} · 변경 시 입력` : '예: 3.5'
+                  isEdit ? `현재 ${getPetSizeLabel(pet.weight)} · 변경 시 입력` : '예: 3.5'
                 }
               />
               <span>kg</span>

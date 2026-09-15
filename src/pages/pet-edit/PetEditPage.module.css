@@ -1,0 +1,50 @@
+.page {
+  max-width: 720px;
+}
+
+.form {
+  width: 100%;
+  margin-top: 32px;
+  padding: 28px;
+  display: grid;
+  gap: 20px;
+}
+.imagePicker {
+  width: 112px;
+  margin: 0 auto 4px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  color: var(--color-brand-600);
+  font-size: var(--font-12);
+  font-weight: 700;
+  cursor: pointer;
+}
+.imagePicker img,
+.imagePicker > svg {
+  width: 96px;
+  height: 96px;
+  border-radius: 32px;
+  object-fit: cover;
+  padding: 28px;
+  background: var(--color-brand-100);
+}
+.imagePicker img {
+  padding: 0;
+}
+.imagePicker input {
+  display: none;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+@media (max-width: 767px) {
+  .form {
+    padding: 20px;
+  }
+  .actions > * {
+    flex: 1;
+  }
+}

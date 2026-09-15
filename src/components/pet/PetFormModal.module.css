@@ -15,6 +15,11 @@
   background: var(--color-white);
   padding: 28px;
   box-shadow: 0 24px 70px rgba(37, 30, 23, 0.22);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.modal::-webkit-scrollbar {
+  display: none;
 }
 .header {
   display: flex;
@@ -102,22 +107,29 @@
 }
 .options {
   position: absolute;
-  top: calc(100% + 6px);
+  top: auto;
+  bottom: calc(100% + 6px);
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 30;
   max-height: 220px;
   overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-12);
-  background: white;
+  background: var(--color-white);
   box-shadow: var(--shadow-sm);
+}
+.options::-webkit-scrollbar {
+  display: none;
 }
 .options button {
   width: 100%;
   padding: 12px 14px;
   border: 0;
-  background: white;
+  background: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: space-between;
