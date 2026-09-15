@@ -1,13 +1,25 @@
 import { ChevronDown } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import dogBreeds from '../../data/dogBreeds.json';
 import { getKoreanInitials } from '../../utils/korean';
 import { getPetBreedLabel } from '../../utils/pet';
 import styles from './PetFormModal.module.css';
 
 export default function BreedCombobox({ value, onChange, disabled }) {
+  const comboboxRef = useRef(null);
   const [query, setQuery] = useState(value ? getPetBreedLabel(value) : '');
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const handleOutsideClick = (event) => {
+      if (!comboboxRef.current?.contains(event.target)) setOpen(false);
+    };
+
+    document.addEventListener('pointerdown', handleOutsideClick);
+    return () => document.removeEventListener('pointerdown', handleOutsideClick);
+  }, [open]);
 
   const filteredBreeds = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase().replaceAll(' ', '');
@@ -33,7 +45,7 @@ export default function BreedCombobox({ value, onChange, disabled }) {
   };
 
   return (
-    <div className={styles.combobox}>
+    <div ref={comboboxRef} className={styles.combobox}>
       <div className={styles.comboboxInput}>
         <input
           id="petBreed"
