@@ -1,4 +1,4 @@
-import { apiRequest } from './client';
+import { apiRequest, refreshAccessToken } from './client';
 
 export const sendVerificationCode = (email) =>
   apiRequest('/auth/send-verification-code', { method: 'POST', auth: false, body: { email } });
@@ -16,5 +16,4 @@ export const signup = ({ email, nickname, password, confirmPassword }) =>
 export const login = ({ email, password }) =>
   apiRequest('/auth/login', { method: 'POST', auth: false, body: { email, password } });
 
-export const reissue = () =>
-  apiRequest('/auth/reissue', { method: 'POST', auth: false, retryOnUnauthorized: false });
+export const reissue = () => refreshAccessToken();
