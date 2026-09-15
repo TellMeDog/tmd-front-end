@@ -102,6 +102,7 @@
     z-index: 60;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
+    box-shadow: none;
   }
   .mobileBottomNav a {
     display: flex;
