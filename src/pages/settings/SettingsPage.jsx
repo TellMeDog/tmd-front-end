@@ -38,7 +38,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="page">
+    <main className={`page ${styles.page}`}>
       <span className="eyebrow">SETTINGS</span>
       <h1 className="page-title">설정</h1>
       <p className="page-description">계정과 로그인 상태를 관리해요.</p>
