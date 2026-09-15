@@ -80,12 +80,16 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
         name: name.trim(),
         breed: breed.trim(),
         weight: numericWeight,
-        imageUploadId: imageUploadId || null,
         hasMuzzle,
         hasLeash,
         hasCarrier,
       };
-      if (isEdit) payload.removeImage = false;
+      if (isEdit) {
+        if (imageUploadId) payload.imageUploadId = imageUploadId;
+        payload.removeImage = false;
+      } else {
+        payload.imageUploadId = imageUploadId || null;
+      }
 
       setPendingStep(isEdit ? '반려동물 수정 중...' : '반려동물 등록 중...');
       const savedPet = isEdit

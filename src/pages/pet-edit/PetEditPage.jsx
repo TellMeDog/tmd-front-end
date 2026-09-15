@@ -86,14 +86,16 @@ export default function PetEditPage() {
     setError('');
     try {
       const imageUploadId = imageFile ? await uploadImage(imageFile, 'PET') : null;
-      const savedPet = await updatePet(pet.petId, {
+      const payload = {
         ...form,
         name: form.name.trim(),
         breed: form.breed.trim(),
         weight,
-        imageUploadId,
         removeImage: false,
-      });
+      };
+      if (imageUploadId) payload.imageUploadId = imageUploadId;
+
+      const savedPet = await updatePet(pet.petId, payload);
       replacePet(savedPet);
       navigate('/my', { replace: true });
     } catch (requestError) {
