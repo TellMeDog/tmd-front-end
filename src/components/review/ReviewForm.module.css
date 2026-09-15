@@ -16,7 +16,6 @@
   display: grid;
   gap: 8px;
 }
-.selectLabel select,
 .form input,
 .form textarea {
   width: 100%;

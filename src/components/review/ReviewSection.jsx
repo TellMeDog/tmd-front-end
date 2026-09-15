@@ -2,6 +2,7 @@ import { PawPrint } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { getApiErrorMessage } from '../../api/client';
 import { getPlaceReviewsPage } from '../../api/reviews.api';
+import CustomSelect from '../form/CustomSelect';
 import StarRating from './StarRating';
 import styles from './ReviewSection.module.css';
 
@@ -56,17 +57,18 @@ export default function ReviewSection({ placeId, reviews: providedReviews }) {
       <div className={styles.sectionHead}>
         <h2>장소 리뷰</h2>
         {!providedReviews && (
-          <select
+          <CustomSelect
             value={sort}
-            onChange={(event) => {
+            options={[
+              { value: 'latest', label: '최신순' },
+              { value: 'rating', label: '별점순' },
+            ]}
+            ariaLabel="리뷰 정렬"
+            onChange={(nextSort) => {
               setPage(0);
-              setSort(event.target.value);
+              setSort(nextSort);
             }}
-            aria-label="리뷰 정렬"
-          >
-            <option value="latest">최신순</option>
-            <option value="rating">별점순</option>
-          </select>
+          />
         )}
       </div>
       {isLoading && <p className={styles.empty}>리뷰를 불러오는 중...</p>}

@@ -5,6 +5,7 @@ import { getApiErrorMessage } from '../../api/client';
 import { getPets } from '../../api/pets.api';
 import { deleteReview, getMyReviews } from '../../api/reviews.api';
 import FeedbackModal from '../../components/feedback/FeedbackModal';
+import CustomSelect from '../../components/form/CustomSelect';
 import { usePetStore } from '../../stores/pet.store';
 import styles from './MyReviewsPage.module.css';
 
@@ -102,19 +103,15 @@ export default function MyReportsPage() {
       <h1 className="page-title">내 리뷰</h1>
       <p className="page-description">내가 남긴 방문 경험을 확인하고 관리할 수 있어요.</p>
       {pets.length > 1 && selectedPet && (
-        <label className={styles.petSelector}>
+        <div className={styles.petSelector}>
           <span>반려동물</span>
-          <select
+          <CustomSelect
             value={selectedPet.petId}
-            onChange={(event) => navigate(`/my/reviews/${event.target.value}`)}
-          >
-            {pets.map((pet) => (
-              <option key={pet.petId} value={pet.petId}>
-                {pet.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            options={pets.map((pet) => ({ value: pet.petId, label: pet.name }))}
+            ariaLabel="리뷰를 확인할 반려동물"
+            onChange={(nextPetId) => navigate(`/my/reviews/${nextPetId}`)}
+          />
+        </div>
       )}
       {(isPetsLoading || isLoading) && <p className="simple-status">리뷰를 불러오는 중...</p>}
       {error && <p className="field-error">{error}</p>}

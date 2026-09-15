@@ -1,5 +1,6 @@
 import { CircleAlert, CircleCheck, CircleX, ImagePlus } from 'lucide-react';
 import { useState } from 'react';
+import CustomSelect from '../form/CustomSelect';
 import StarRating from './StarRating';
 import styles from './ReviewForm.module.css';
 
@@ -55,19 +56,15 @@ export default function ReviewForm({
       }}
     >
       {pets.length > 0 && (
-        <label className={styles.selectLabel}>
+        <div className={styles.selectLabel}>
           함께 방문한 반려동물
-          <select
+          <CustomSelect
             value={value.petId}
-            onChange={(event) => change('petId', Number(event.target.value))}
-          >
-            {pets.map((pet) => (
-              <option key={pet.petId} value={pet.petId}>
-                {pet.name}
-              </option>
-            ))}
-          </select>
-        </label>
+            options={pets.map((pet) => ({ value: pet.petId, label: pet.name }))}
+            ariaLabel="함께 방문한 반려동물"
+            onChange={(petId) => change('petId', petId)}
+          />
+        </div>
       )}
       <fieldset>
         <legend>방문 결과</legend>

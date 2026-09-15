@@ -202,12 +202,8 @@
   gap: 12px;
   font-weight: 700;
 }
-.petSelector select {
-  min-height: 44px;
-  padding: 0 40px 0 16px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-12);
-  background: var(--color-white);
+.favoriteEmpty {
+  margin-top: 32px;
 }
 @media (max-width: 767px) {
   .hero {
@@ -234,6 +230,9 @@
   }
   .favoriteGrid > * {
     min-width: 0;
+  }
+  .favoriteEmpty {
+    margin-top: 24px;
   }
   .mapPreview {
     height: 260px;

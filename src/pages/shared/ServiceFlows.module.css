@@ -167,10 +167,12 @@
 .petPhoto {
   width: 80px;
   height: 80px;
+  flex: 0 0 80px;
   border-radius: 28px;
   background: var(--color-brand-100);
   display: grid;
   place-items: center;
+  overflow: hidden;
   font-size: 44px;
 }
 .petPhoto img {
@@ -178,6 +180,10 @@
   height: 100%;
   border-radius: inherit;
   object-fit: cover;
+}
+.petCard > div:nth-child(2) {
+  flex: 1;
+  min-width: 0;
 }
 .emptyPetIcon {
   display: block;
@@ -253,6 +259,10 @@
     font-size: 0;
     padding: 0;
     width: 44px;
+    gap: 0;
+  }
+  .petActions button svg {
+    flex-shrink: 0;
   }
   .report {
     padding: 16px;
