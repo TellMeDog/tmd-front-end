@@ -11,6 +11,9 @@
   gap: 12px;
   font-weight: 700;
 }
+.reviewEmpty {
+  margin-top: 32px;
+}
 .card {
   padding: 20px;
   display: flex;
@@ -76,6 +79,9 @@
   background: var(--color-white);
 }
 @media (max-width: 767px) {
+  .reviewEmpty {
+    margin-top: 24px;
+  }
   .card {
     align-items: flex-start;
     flex-wrap: wrap;

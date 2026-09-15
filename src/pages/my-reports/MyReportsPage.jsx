@@ -116,21 +116,21 @@ export default function MyReportsPage() {
       {(isPetsLoading || isLoading) && <p className="simple-status">리뷰를 불러오는 중...</p>}
       {error && <p className="field-error">{error}</p>}
       {!isPetsLoading && pets.length === 0 && !error && (
-        <section className="card empty-state">
+        <section className={`card empty-state ${styles.reviewEmpty}`}>
           <MapPin size={40} />
           <h2>반려동물을 먼저 등록해 주세요.</h2>
           <p>반려동물을 등록하면 작성한 리뷰를 확인할 수 있어요.</p>
         </section>
       )}
       {!isPetsLoading && petId && !selectedPet && pets.length > 0 && !error && (
-        <section className="card empty-state">
+        <section className={`card empty-state ${styles.reviewEmpty}`}>
           <MapPin size={40} />
           <h2>반려동물을 찾을 수 없어요.</h2>
           <p>삭제되었거나 내 반려동물이 아닌지 확인해 주세요.</p>
         </section>
       )}
       {!isLoading && selectedPet && !error && reviews.length === 0 && (
-        <section className="card empty-state">
+        <section className={`card empty-state ${styles.reviewEmpty}`}>
           <MapPin size={40} />
           <h2>작성한 리뷰가 없어요.</h2>
           <p>방문한 장소에서 첫 리뷰를 남겨보세요.</p>
