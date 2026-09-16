@@ -5,7 +5,6 @@ export const useAuthStore = create((set) => ({
   accessToken: null,
   nickname: localStorage.getItem('tmd:nickname'),
   isAuthReady: false,
-  isSessionExpired: false,
   setAccessToken: (accessToken) => set({ accessToken }),
   setAuthReady: (isAuthReady) => set({ isAuthReady }),
   setSession: (session) => {
@@ -21,7 +20,6 @@ export const useAuthStore = create((set) => ({
       accessToken,
       nickname: nickname ?? state.nickname,
       isAuthReady: true,
-      isSessionExpired: false,
     }));
   },
   clearSession: ({ signedOut = false } = {}) => {
@@ -29,13 +27,13 @@ export const useAuthStore = create((set) => ({
     localStorage.removeItem('tmd:nickname');
     localStorage.removeItem('tmd:has-session');
     if (signedOut) localStorage.setItem('tmd:signed-out', 'true');
-    set({ accessToken: null, nickname: null, isAuthReady: true, isSessionExpired: false });
+    set({ accessToken: null, nickname: null, isAuthReady: true });
   },
   expireSession: () => {
     usePetStore.getState().clearPets();
     localStorage.removeItem('tmd:nickname');
     localStorage.removeItem('tmd:has-session');
     localStorage.setItem('tmd:signed-out', 'true');
-    set({ accessToken: null, nickname: null, isAuthReady: true, isSessionExpired: true });
+    set({ accessToken: null, nickname: null, isAuthReady: true });
   },
 }));

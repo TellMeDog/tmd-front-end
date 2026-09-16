@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
 import { reissue } from '../../api/auth.api';
 import { useAuthStore } from '../../stores/auth.store';
 
 let restorePromise = null;
 
-function restoreSession({ redirectOnFailure }) {
+function restoreSession() {
   if (localStorage.getItem('tmd:signed-out') === 'true') {
     useAuthStore.getState().clearSession({ signedOut: true });
     return Promise.resolve();
@@ -17,7 +16,7 @@ function restoreSession({ redirectOnFailure }) {
         useAuthStore.getState().setSession(session);
       })
       .catch(() => {
-        if (hadSession || redirectOnFailure) useAuthStore.getState().expireSession();
+        if (hadSession) useAuthStore.getState().expireSession();
         else useAuthStore.getState().clearSession();
       })
       .finally(() => {
@@ -29,17 +28,11 @@ function restoreSession({ redirectOnFailure }) {
 }
 
 export default function AuthBootstrap({ children }) {
-  const location = useLocation();
   const isAuthReady = useAuthStore((state) => state.isAuthReady);
-  const isSessionExpired = useAuthStore((state) => state.isSessionExpired);
-  const redirectOnFailure =
-    location.pathname === '/favorites' ||
-    location.pathname.startsWith('/my') ||
-    /^\/places\/[^/]+\/(prep|report)$/.test(location.pathname);
 
   useEffect(() => {
-    if (!isAuthReady) restoreSession({ redirectOnFailure });
-  }, [isAuthReady, redirectOnFailure]);
+    if (!isAuthReady) restoreSession();
+  }, [isAuthReady]);
 
   if (!isAuthReady) {
     return (
@@ -47,10 +40,6 @@ export default function AuthBootstrap({ children }) {
         로그인 상태를 확인하고 있어요.
       </main>
     );
-  }
-
-  if (isSessionExpired && location.pathname !== '/login') {
-    return <Navigate to="/login" replace state={{ from: location.pathname }} />;
   }
 
   return children;

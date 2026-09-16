@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 import HomePage from '../pages/home/HomePage';
 import MapPage from '../pages/map/MapPage';
 import FavoritesPage from '../pages/favorites/FavoritesPage';
@@ -22,17 +23,19 @@ export default function App() {
         <Route index element={<HomePage />} />
         <Route path="map" element={<MapPage />} />
         <Route path="places/:placeId" element={<PlaceDetailPage />} />
-        <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
-        <Route path="places/:placeId/report" element={<VisitReportPage />} />
-        <Route path="favorites" element={<FavoritesPage />} />
-        <Route path="my" element={<MyPage />} />
-        <Route path="my/pets" element={<PetManagePage />} />
-        <Route path="my/pets/:petId/edit" element={<PetEditPage />} />
-        <Route path="my/reviews" element={<MyReportsPage />} />
-        <Route path="my/reviews/:petId" element={<MyReportsPage />} />
-        <Route path="my/reviews/:reviewId/edit" element={<ReviewEditPage />} />
-        <Route path="my/reports" element={<Navigate to="/my/reviews" replace />} />
-        <Route path="my/settings" element={<SettingsPage />} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
+          <Route path="places/:placeId/report" element={<VisitReportPage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="my" element={<MyPage />} />
+          <Route path="my/pets" element={<PetManagePage />} />
+          <Route path="my/pets/:petId/edit" element={<PetEditPage />} />
+          <Route path="my/reviews" element={<MyReportsPage />} />
+          <Route path="my/reviews/:petId" element={<MyReportsPage />} />
+          <Route path="my/reviews/:reviewId/edit" element={<ReviewEditPage />} />
+          <Route path="my/reports" element={<Navigate to="/my/reviews" replace />} />
+          <Route path="my/settings" element={<SettingsPage />} />
+        </Route>
       </Route>
       <Route path="login" element={<LoginPage />} />
       <Route path="signup" element={<SignupPage />} />
