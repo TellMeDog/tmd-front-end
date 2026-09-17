@@ -192,7 +192,7 @@ export default function MapPage() {
             <input
               value={keywordInput}
               onChange={(event) => setKeywordInput(event.target.value)}
-              placeholder="장소명으로 검색"
+              placeholder="어디로 함께 떠나볼까요?"
               aria-label="장소 검색"
             />
             {keywordInput.trim() && (
