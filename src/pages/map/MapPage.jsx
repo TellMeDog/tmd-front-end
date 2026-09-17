@@ -97,7 +97,7 @@ export default function MapPage() {
   useEffect(() => () => clearTimeout(boundsDebounceRef.current), []);
 
   useEffect(() => {
-    if (!keyword || !petId || !location) return;
+    if (!keyword || !location) return;
     setFetchedRegion(null);
     setFetchError(false);
     setHasFetched(false);
@@ -114,7 +114,7 @@ export default function MapPage() {
   }, [keyword, petId, location]);
 
   useEffect(() => {
-    if (!region || !regionDetail || !petId || !location) return;
+    if (!region || !regionDetail || !location) return;
     setFetchedRegion(null);
     setFetchError(false);
     setHasFetched(false);
@@ -131,7 +131,7 @@ export default function MapPage() {
   }, [region, regionDetail, petId, location]);
 
   useEffect(() => {
-    if (keyword || (region && regionDetail) || !bounds || !petId || !location) return;
+    if (keyword || (region && regionDetail) || !bounds || !location) return;
 
     const isCached =
       fetchedRegion &&

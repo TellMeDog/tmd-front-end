@@ -36,6 +36,8 @@ const toPlace = (marker, category) => {
   };
 };
 
+// petId가 없으면(비로그인 또는 반려동물 미선택) 회색 마커로 응답하므로,
+// petId 없이도 조회 자체는 계속 진행해야 함
 const fetchPlacesByCategory = ({ sw, ne }, category, petId, origin) => {
   const query = new URLSearchParams({
     swLat: sw.lat,
@@ -44,9 +46,9 @@ const fetchPlacesByCategory = ({ sw, ne }, category, petId, origin) => {
     neLng: ne.lng,
     currMapX: origin.lng,
     currMapY: origin.lat,
-    petId,
   });
   if (category) query.set('category', category);
+  if (petId) query.set('petId', petId);
 
   return apiRequest(`/places/search/category?${query}`).then((data) =>
     data.map((marker) => toPlace(marker, category)),
@@ -57,7 +59,7 @@ export const getNearbyPlaces = async (
   bounds,
   { category, origin, petId = getRepresentativePetId() } = {},
 ) => {
-  if (!bounds || !petId || !origin) return { success: true, data: [] };
+  if (!bounds || !origin) return { success: true, data: [] };
 
   const candidates = await fetchPlacesByCategory(bounds, category, petId, origin);
   const data = [...candidates].sort((a, b) => a.distanceKm - b.distanceKm);
@@ -93,9 +95,10 @@ export const getPlacesByRegion = async (
   regionDetailName,
   { petId = getRepresentativePetId(), origin } = {},
 ) => {
-  if (!regionName || !regionDetailName || !petId || !origin) return { success: true, data: [] };
+  if (!regionName || !regionDetailName || !origin) return { success: true, data: [] };
 
-  const query = new URLSearchParams({ petId, currMapX: origin.lng, currMapY: origin.lat });
+  const query = new URLSearchParams({ currMapX: origin.lng, currMapY: origin.lat });
+  if (petId) query.set('petId', petId);
   const markers = await apiRequest(
     `/places/region/${encodeURIComponent(regionName)}/${encodeURIComponent(regionDetailName)}?${query}`,
   );
@@ -107,9 +110,10 @@ export const searchPlacesByKeyword = async (
   keyword,
   { petId = getRepresentativePetId(), origin } = {},
 ) => {
-  if (!keyword || !petId || !origin) return { success: true, data: [] };
+  if (!keyword || !origin) return { success: true, data: [] };
 
-  const query = new URLSearchParams({ keyword, petId, currMapX: origin.lng, currMapY: origin.lat });
+  const query = new URLSearchParams({ keyword, currMapX: origin.lng, currMapY: origin.lat });
+  if (petId) query.set('petId', petId);
   const markers = await apiRequest(`/places/search/keyword?${query}`);
 
   return { success: true, data: markers.map((marker) => toPlace(marker, null)) };
