@@ -1,13 +1,28 @@
 import { create } from 'zustand';
 
+// 선택된 반려동물이 없거나 더 이상 목록에 없으면 첫 번째 반려동물로 대체
+const resolveSelectedPetId = (pets, currentSelectedPetId) =>
+  pets.some((pet) => pet.petId === currentSelectedPetId) ? currentSelectedPetId : (pets[0]?.petId ?? null);
+
 export const usePetStore = create((set) => ({
   pets: [],
-  setPets: (pets) => set({ pets }),
-  appendPets: (newPets) => set((state) => ({ pets: [...state.pets, ...newPets] })),
+  selectedPetId: null,
+  setPets: (pets) =>
+    set((state) => ({ pets, selectedPetId: resolveSelectedPetId(pets, state.selectedPetId) })),
+  setSelectedPetId: (petId) => set({ selectedPetId: petId }),
+  appendPets: (newPets) =>
+    set((state) => {
+      const pets = [...state.pets, ...newPets];
+      return { pets, selectedPetId: resolveSelectedPetId(pets, state.selectedPetId) };
+    }),
   replacePet: (updatedPet) =>
     set((state) => ({
       pets: state.pets.map((pet) => (pet.petId === updatedPet.petId ? updatedPet : pet)),
     })),
-  removePet: (petId) => set((state) => ({ pets: state.pets.filter((pet) => pet.petId !== petId) })),
-  clearPets: () => set({ pets: [] }),
+  removePet: (petId) =>
+    set((state) => {
+      const pets = state.pets.filter((pet) => pet.petId !== petId);
+      return { pets, selectedPetId: resolveSelectedPetId(pets, state.selectedPetId) };
+    }),
+  clearPets: () => set({ pets: [], selectedPetId: null }),
 }));
