@@ -71,13 +71,16 @@
 .chips {
   display: flex;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 12px;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .chips::-webkit-scrollbar {
   display: none;
+}
+.regionRow {
+  margin-top: 20px;
 }
 .chips button {
   height: 44px;

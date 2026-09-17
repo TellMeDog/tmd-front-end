@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getHomePlaces } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
+import RegionSelectBox from '../../components/place/RegionSelectBox';
 import { usePetStore } from '../../stores/pet.store';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { withConjunctiveParticle } from '../../utils/korean';
@@ -20,9 +21,19 @@ export default function HomePage() {
   const { location } = useCurrentLocation();
   const [homePlaces, setHomePlaces] = useState([]);
   const [keyword, setKeyword] = useState('');
+  const [regionName, setRegionName] = useState(null);
+  const [regionDetailName, setRegionDetailName] = useState(null);
 
   const handleSelectCategory = (category) => {
     navigate(category ? `/map?category=${encodeURIComponent(category)}` : '/map');
+  };
+
+  const handleSelectRegion = (nextRegionName, nextRegionDetailName) => {
+    setRegionName(nextRegionName);
+    setRegionDetailName(nextRegionDetailName);
+    if (!nextRegionName || !nextRegionDetailName) return;
+    const query = new URLSearchParams({ region: nextRegionName, regionDetail: nextRegionDetailName });
+    navigate(`/map?${query}`);
   };
 
   const handleSearchSubmit = (event) => {
@@ -60,6 +71,13 @@ export default function HomePage() {
               <Search size={20} />
             </button>
           </form>
+          <div className={styles.regionRow}>
+            <RegionSelectBox
+              regionName={regionName}
+              regionDetailName={regionDetailName}
+              onSelect={handleSelectRegion}
+            />
+          </div>
           <PlaceFilterBar className={styles.chips} onSelect={handleSelectCategory} />
         </div>
       </section>

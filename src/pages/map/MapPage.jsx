@@ -1,8 +1,9 @@
 import { Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getNearbyPlaces, searchPlacesByKeyword } from '../../api/places.api';
+import { getNearbyPlaces, getPlacesByRegion, searchPlacesByKeyword } from '../../api/places.api';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
+import RegionSelectBox from '../../components/place/RegionSelectBox';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { usePetStore } from '../../stores/pet.store';
 import { expandBounds, isBoundsContained } from '../../utils/geo';
@@ -22,6 +23,14 @@ export default function MapPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get('category');
   const keyword = searchParams.get('keyword');
+  const region = searchParams.get('region');
+  const regionDetail = searchParams.get('regionDetail');
+  // select 박스에 보여줄 값. 카테고리를 눌러 region 쿼리 파라미터가 사라져도
+  // 사용자가 고른 지역이 select에서 풀린 것처럼 보이지 않도록 URL과 별개로 들고 있음
+  const [regionSelection, setRegionSelection] = useState(() => ({
+    regionName: searchParams.get('region'),
+    regionDetailName: searchParams.get('regionDetail'),
+  }));
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [bounds, setBounds] = useState(null);
@@ -44,6 +53,30 @@ export default function MapPage() {
   const handleClearKeyword = () => {
     setSelectedId(null);
     setSearchParams({});
+  };
+
+  const handleSelectRegion = (nextRegionName, nextRegionDetailName) => {
+    setSelectedId(null);
+    setRegionSelection({ regionName: nextRegionName, regionDetailName: nextRegionDetailName });
+    if (!nextRegionName) {
+      setSearchParams({});
+      return;
+    }
+    const params = { region: nextRegionName };
+    if (nextRegionDetailName) params.regionDetail = nextRegionDetailName;
+    setSearchParams(params);
+  };
+
+  // "현재 위치로" 버튼을 누르면 지역 select 선택도 함께 해제 (카테고리/키워드는 그대로 둠)
+  const handleLocate = () => {
+    setSelectedId(null);
+    setRegionSelection({ regionName: null, regionDetailName: null });
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('region');
+      next.delete('regionDetail');
+      return next;
+    });
   };
 
   const handleKeywordSubmit = (event) => {
@@ -79,7 +112,24 @@ export default function MapPage() {
   }, [keyword, petId, location]);
 
   useEffect(() => {
-    if (keyword || !bounds || !petId || !location) return;
+    if (!region || !regionDetail || !petId || !location) return;
+    setFetchedRegion(null);
+    setFetchError(false);
+    setHasFetched(false);
+    getPlacesByRegion(region, regionDetail, { petId, origin: location })
+      .then(({ data }) => {
+        setNearbyPlaces(data);
+        setHasFetched(true);
+      })
+      .catch(() => {
+        setNearbyPlaces([]);
+        setFetchError(true);
+        setHasFetched(true);
+      });
+  }, [region, regionDetail, petId, location]);
+
+  useEffect(() => {
+    if (keyword || (region && regionDetail) || !bounds || !petId || !location) return;
 
     const isCached =
       fetchedRegion &&
@@ -102,7 +152,7 @@ export default function MapPage() {
         setFetchError(true);
         setHasFetched(true);
       });
-  }, [bounds, location, category, keyword, petId, fetchedRegion]);
+  }, [bounds, location, category, keyword, region, regionDetail, petId, fetchedRegion]);
 
   const selectedPlace = useMemo(
     () => nearbyPlaces.find((place) => place.id === selectedId) ?? null,
@@ -126,6 +176,9 @@ export default function MapPage() {
             onSelectPlace={setSelectedId}
             onBoundsChange={handleBoundsChange}
             sheetHeightState={sheetHeightState}
+            region={region}
+            regionDetail={regionDetail}
+            onLocate={handleLocate}
           />
         ) : (
           <span className={pageStyles.mapPlaceholder}>
@@ -148,6 +201,13 @@ export default function MapPage() {
               </button>
             )}
           </form>
+
+          <RegionSelectBox
+            regionName={regionSelection.regionName}
+            regionDetailName={regionSelection.regionDetailName}
+            onSelect={handleSelectRegion}
+            className={styles.regionBar}
+          />
 
           <PlaceFilterBar
             active={keyword ? undefined : category}
