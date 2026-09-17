@@ -1,0 +1,10 @@
+.wrap {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.select {
+  min-width: 96px;
+  max-width: 140px;
+  flex-shrink: 0;
+}
