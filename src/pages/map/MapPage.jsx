@@ -1,4 +1,4 @@
-import { Search, X } from 'lucide-react';
+import { List, Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getNearbyPlaces, getPlacesByRegion, searchPlacesByKeyword } from '../../api/places.api';
@@ -32,6 +32,8 @@ export default function MapPage() {
     regionDetailName: searchParams.get('regionDetail'),
   }));
   const [nearbyPlaces, setNearbyPlaces] = useState([]);
+  // 사용자가 목록 패널을 직접 닫았는지 여부. 새로 검색되면(장소 목록이 바뀌면) 다시 열림
+  const [listClosed, setListClosed] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
   const [bounds, setBounds] = useState(null);
   const [fetchedRegion, setFetchedRegion] = useState(null);
@@ -154,11 +156,15 @@ export default function MapPage() {
       });
   }, [bounds, location, category, keyword, region, regionDetail, petId, fetchedRegion]);
 
+  useEffect(() => {
+    setListClosed(false);
+  }, [nearbyPlaces]);
+
   const selectedPlace = useMemo(
     () => nearbyPlaces.find((place) => place.id === selectedId) ?? null,
     [nearbyPlaces, selectedId],
   );
-  const showList = !selectedPlace && nearbyPlaces.length > 0;
+  const showList = !selectedPlace && !listClosed && nearbyPlaces.length > 0;
 
   useEffect(() => {
     if (!showList && !selectedPlace) setSheetHeightState(null);
@@ -215,11 +221,11 @@ export default function MapPage() {
             className={styles.filterBar}
           />
 
-          {fetchError && !showList && !selectedPlace && (
+          {fetchError && !selectedPlace && (
             <span className={styles.errorBanner}>장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</span>
           )}
 
-          {!fetchError && hasFetched && !showList && !selectedPlace && (
+          {!fetchError && hasFetched && nearbyPlaces.length === 0 && !selectedPlace && (
             <span className={styles.emptyBanner}>이 지역에는 조건에 맞는 장소가 없어요 (0건)</span>
           )}
         </div>
@@ -229,6 +235,7 @@ export default function MapPage() {
             places={nearbyPlaces}
             onSelectPlace={setSelectedId}
             onHeightStateChange={setSheetHeightState}
+            onClose={() => setListClosed(true)}
           />
         ) : (
           <PlaceBottomSheet
@@ -236,6 +243,13 @@ export default function MapPage() {
             onClose={() => setSelectedId(null)}
             onHeightStateChange={setSheetHeightState}
           />
+        )}
+
+        {listClosed && !selectedPlace && nearbyPlaces.length > 0 && (
+          <button type="button" className={styles.reopenList} onClick={() => setListClosed(false)}>
+            <List size={16} />
+            목록보기 ({nearbyPlaces.length})
+          </button>
         )}
       </section>
     </main>

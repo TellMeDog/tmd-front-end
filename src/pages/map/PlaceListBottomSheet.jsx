@@ -1,4 +1,4 @@
-import { Heart, MapPin, Star } from 'lucide-react';
+import { Heart, MapPin, Star, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { addFavorite, deleteFavorite } from '../../api/favorites.api';
@@ -6,16 +6,18 @@ import { PLACE_STATUS_META } from '../../constants/placeStatus';
 import { useAuthStore } from '../../stores/auth.store';
 import styles from './PlaceListBottomSheet.module.css';
 
+const MOBILE_BREAKPOINT = 767;
 const PEEK_HEIGHT_PX = 128;
 const HALF_RATIO = 0.5;
 const FULL_RATIO = 0.97;
 
-export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightStateChange }) {
+export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightStateChange, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const [heightState, setHeightState] = useState('half');
   const [dragHeight, setDragHeight] = useState(null);
+  const [closing, setClosing] = useState(false);
   const [favoriteOverrides, setFavoriteOverrides] = useState({});
   const [pendingIds, setPendingIds] = useState(() => new Set());
   const sheetRef = useRef(null);
@@ -60,7 +62,9 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
     }
   };
 
+  // 데스크톱에서는 지도 왼쪽에 고정된 패널이라 높이 드래그가 필요 없음
   const handlePointerDown = (event) => {
+    if (window.innerWidth > MOBILE_BREAKPOINT) return;
     const containerHeight = sheetRef.current?.parentElement?.clientHeight;
     if (!sheetRef.current || !containerHeight) return;
     dragRef.current = {
@@ -97,13 +101,25 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
     });
   };
 
+  // 데스크톱에서는 밑으로 내리는 대신 왼쪽으로 접히는 애니메이션을 먼저 재생하고,
+  // 그 애니메이션이 끝난 뒤에 실제로 닫음(부모에서 언마운트)
+  const handleClose = () => {
+    if (window.innerWidth > MOBILE_BREAKPOINT) setClosing(true);
+    else onClose?.();
+  };
+
+  const handleTransitionEnd = (event) => {
+    if (closing && event.propertyName === 'transform') onClose?.();
+  };
+
   if (places.length === 0) return null;
 
   return (
     <section
       ref={sheetRef}
-      className={`${styles.sheet} ${styles[heightState]} ${dragHeight != null ? styles.dragging : ''}`}
+      className={`${styles.sheet} ${styles[heightState]} ${dragHeight != null ? styles.dragging : ''} ${closing ? styles.closing : ''}`}
       style={dragHeight != null ? { height: `${dragHeight}px` } : undefined}
+      onTransitionEnd={handleTransitionEnd}
       role="dialog"
       aria-label="주변 장소 목록"
     >
@@ -116,6 +132,15 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
       >
         <b className={styles.title}>주변 장소 {places.length}곳</b>
         <span className={styles.handle} />
+        <button
+          type="button"
+          className={styles.close}
+          onClick={handleClose}
+          onPointerDown={(event) => event.stopPropagation()}
+          aria-label="목록 닫기"
+        >
+          <X size={18} />
+        </button>
       </div>
 
       <ul className={styles.list}>
