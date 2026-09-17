@@ -1,6 +1,7 @@
 import { ChevronRight } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import BrandLogo from '../icons/BrandLogo';
+import PetSelectBox from '../pet/PetSelectBox';
 import { useAuthStore } from '../../stores/auth.store';
 import { usePetStore } from '../../stores/pet.store';
 import { getPets } from '../../api/pets.api';
@@ -44,6 +45,7 @@ export default function DesktopHeader() {
           ))}
         </nav>
         <div className={styles.headerActions}>
+          <PetSelectBox />
           <NavLink className={styles.profileButton} to="/my">
             <span>{profileLabel}</span>
             <ChevronRight size={16} />
