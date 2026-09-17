@@ -1,5 +1,5 @@
 import { LocateFixed, PawPrint } from 'lucide-react';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { CustomOverlayMap, Map, MarkerClusterer, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { CATEGORY_ICON_MAP } from '../../constants/placeCategories';
 import styles from './MapPage.module.css';
@@ -60,9 +60,21 @@ export default function KakaoMapView({
   onSelectPlace,
   onBoundsChange,
   sheetHeightState,
+  region,
+  regionDetail,
+  onLocate,
 }) {
   const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services', 'clusterer'] });
   const mapRef = useRef(null);
+  // 지도가 지역 중심으로 이동한 뒤, 바텀시트 높이 변화로 인한 재중심 계산에서도
+  // 사용자 위치가 아닌 이 좌표를 기준으로 삼기 위해 저장해 둠 (region이 풀렸을 때
+  // 이 값이 null로 바뀌는 것 자체가 지도를 다시 이동시키지는 않도록 ref로도 들고 있음)
+  const [regionCenter, setRegionCenter] = useState(null);
+  const regionCenterRef = useRef(null);
+
+  useEffect(() => {
+    regionCenterRef.current = regionCenter;
+  }, [regionCenter]);
 
   // 상단바/바텀시트에 가리지 않는 보이는 영역의 아래쪽 40% 지점에 대상이 오도록 이동
   const centerWithOffset = useCallback(
@@ -83,9 +95,41 @@ export default function KakaoMapView({
     [sheetHeightState],
   );
 
+  // "현재 위치로" 버튼을 눌렀을 때만 지역 중심 기준을 명시적으로 내 위치로 되돌리고,
+  // 선택돼 있던 지역 select도 함께 해제
   const handleRecenter = useCallback(() => {
+    setRegionCenter(null);
     centerWithOffset(userLocation);
-  }, [centerWithOffset, userLocation]);
+    onLocate?.();
+  }, [centerWithOffset, userLocation, onLocate]);
+
+  // 시도/시군구를 선택하면 그 지역의 대표 좌표로 지도를 이동.
+  // 지번 주소 검색으로 행정구역 중심 좌표를 찾고, 실패하면 키워드 검색으로 대체
+  const centerOnRegion = useCallback(
+    (regionName, regionDetailName) => {
+      const services = window.kakao?.maps?.services;
+      if (!services) return;
+
+      const address = `${regionName} ${regionDetailName}`;
+      const applyCenter = (lat, lng) => {
+        setRegionCenter({ lat, lng });
+        centerWithOffset({ lat, lng });
+      };
+
+      new services.Geocoder().addressSearch(address, (result, status) => {
+        if (status === services.Status.OK && result[0]) {
+          applyCenter(Number(result[0].y), Number(result[0].x));
+          return;
+        }
+
+        new services.Places().keywordSearch(address, (placeResult, placeStatus) => {
+          if (placeStatus !== services.Status.OK || !placeResult[0]) return;
+          applyCenter(Number(placeResult[0].y), Number(placeResult[0].x));
+        });
+      });
+    },
+    [centerWithOffset],
+  );
 
   const emitBounds = useCallback(
     (map) => {
@@ -104,15 +148,28 @@ export default function KakaoMapView({
     (map) => {
       mapRef.current = map;
       emitBounds(map);
+      if (region && regionDetail) centerOnRegion(region, regionDetail);
     },
-    [emitBounds],
+    [emitBounds, centerOnRegion, region, regionDetail],
   );
 
+  // 지도가 이미 떠 있는 상태에서 지역을 바꾸면 그 지역으로 이동.
+  // 카테고리 선택 등으로 지역 파라미터가 사라져도(예: 지역 안에서 카테고리만 걸러보기)
+  // 이미 이동해 둔 지역 중심은 그대로 유지 — "현재 위치로" 버튼을 눌러야만 초기화됨
+  useEffect(() => {
+    if (!mapRef.current || !region || !regionDetail) return;
+    centerOnRegion(region, regionDetail);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [region, regionDetail]);
+
   // 장소를 선택했을 때 그 위치로 이동. 선택된 장소가 없으면 상단바/바텀시트 높이가
-  // 바뀔 때 현재 위치가 가려지지 않도록 다시 맞춰줌. 닫을 때(선택 해제)는 지도를 그대로 둠
+  // 바뀔 때 선택된 지역(없으면 현재 위치)이 가려지지 않도록 다시 맞춰줌.
+  // 닫을 때(선택 해제)는 지도를 그대로 둠.
+  // regionCenter는 ref로 최신값만 참조하고 의존성에는 넣지 않음 — 카테고리 선택 등으로
+  // 지역 모드가 풀릴 때 그 자체로 지도가 현재 위치로 튕기지 않도록 하기 위함
   useEffect(() => {
     if (!mapRef.current) return;
-    centerWithOffset(selectedPlace ?? userLocation);
+    centerWithOffset(selectedPlace ?? regionCenterRef.current ?? userLocation);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlace?.id, sheetHeightState]);
 
