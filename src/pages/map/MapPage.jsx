@@ -1,3 +1,4 @@
+import { Search, X } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getNearbyPlaces, searchPlacesByKeyword } from '../../api/places.api';
@@ -27,11 +28,30 @@ export default function MapPage() {
   const [fetchedRegion, setFetchedRegion] = useState(null);
   const [fetchError, setFetchError] = useState(false);
   const [hasFetched, setHasFetched] = useState(false);
+  const [keywordInput, setKeywordInput] = useState(keyword ?? '');
+  const [sheetHeightState, setSheetHeightState] = useState(null);
   const boundsDebounceRef = useRef(null);
+
+  useEffect(() => {
+    setKeywordInput(keyword ?? '');
+  }, [keyword]);
 
   const handleSelectCategory = (nextCategory) => {
     setSelectedId(null);
     setSearchParams(nextCategory ? { category: nextCategory } : {});
+  };
+
+  const handleClearKeyword = () => {
+    setSelectedId(null);
+    setSearchParams({});
+  };
+
+  const handleKeywordSubmit = (event) => {
+    event.preventDefault();
+    const trimmed = keywordInput.trim();
+    setSelectedId(null);
+    if (trimmed) setSearchParams({ keyword: trimmed });
+    else handleClearKeyword();
   };
 
   const handleBoundsChange = useCallback((nextBounds) => {
@@ -90,9 +110,13 @@ export default function MapPage() {
   );
   const showList = !selectedPlace && nearbyPlaces.length > 0;
 
+  useEffect(() => {
+    if (!showList && !selectedPlace) setSheetHeightState(null);
+  }, [showList, selectedPlace]);
+
   return (
     <main className={pageStyles.mapLayout}>
-      <section className={`${pageStyles.mapFull} ${styles.mapWrap}`}>
+      <section className={`${pageStyles.mapFull} ${styles.mapWrap}`} data-sheet={sheetHeightState ?? 'none'}>
         {KAKAO_MAP_KEY && location ? (
           <KakaoMapView
             apiKey={KAKAO_MAP_KEY}
@@ -101,6 +125,7 @@ export default function MapPage() {
             selectedPlace={selectedPlace}
             onSelectPlace={setSelectedId}
             onBoundsChange={handleBoundsChange}
+            sheetHeightState={sheetHeightState}
           />
         ) : (
           <span className={pageStyles.mapPlaceholder}>
@@ -108,20 +133,49 @@ export default function MapPage() {
           </span>
         )}
 
-        <PlaceFilterBar active={category} onSelect={handleSelectCategory} className={styles.filterBar} />
+        <div className={styles.topBar}>
+          <form className={styles.keywordBar} onSubmit={handleKeywordSubmit}>
+            <Search size={16} />
+            <input
+              value={keywordInput}
+              onChange={(event) => setKeywordInput(event.target.value)}
+              placeholder="장소명으로 검색"
+              aria-label="장소 검색"
+            />
+            {keywordInput.trim() && (
+              <button type="button" onClick={handleClearKeyword} aria-label="검색어 지우기">
+                <X size={16} />
+              </button>
+            )}
+          </form>
 
-        {fetchError && !showList && !selectedPlace && (
-          <span className={styles.errorBanner}>장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</span>
-        )}
+          <PlaceFilterBar
+            active={keyword ? undefined : category}
+            onSelect={handleSelectCategory}
+            className={styles.filterBar}
+          />
 
-        {!fetchError && hasFetched && !showList && !selectedPlace && (
-          <span className={styles.emptyBanner}>이 지역에는 조건에 맞는 장소가 없어요 (0건)</span>
-        )}
+          {fetchError && !showList && !selectedPlace && (
+            <span className={styles.errorBanner}>장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</span>
+          )}
+
+          {!fetchError && hasFetched && !showList && !selectedPlace && (
+            <span className={styles.emptyBanner}>이 지역에는 조건에 맞는 장소가 없어요 (0건)</span>
+          )}
+        </div>
 
         {showList ? (
-          <PlaceListBottomSheet places={nearbyPlaces} onSelectPlace={setSelectedId} />
+          <PlaceListBottomSheet
+            places={nearbyPlaces}
+            onSelectPlace={setSelectedId}
+            onHeightStateChange={setSheetHeightState}
+          />
         ) : (
-          <PlaceBottomSheet place={selectedPlace} onClose={() => setSelectedId(null)} />
+          <PlaceBottomSheet
+            place={selectedPlace}
+            onClose={() => setSelectedId(null)}
+            onHeightStateChange={setSheetHeightState}
+          />
         )}
       </section>
     </main>

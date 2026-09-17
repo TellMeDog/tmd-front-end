@@ -11,6 +11,32 @@ const STATUS_PIN_CLASS = {
   unknown: 'pinUnknown',
 };
 
+const MOBILE_BREAKPOINT = 767;
+// 리스트 시트의 peek 높이(PlaceListBottomSheet.jsx)와 맞춰둠
+const SHEET_PEEK_HEIGHT_PX = 128;
+// 상단 검색바+카테고리 필터바가 가리는 대략적인 높이
+const TOP_BAR_HEIGHT_PX = 120;
+// 보이는 영역의 "아래"에서부터 이 비율만큼 되는 지점에 대상을 위치시킴
+const VISIBLE_BOTTOM_RATIO = 0.4;
+
+// 상단바/바텀시트에 가려지지 않는 실제 보이는 영역을 기준으로 대상 좌표를 계산
+function getVisibleTargetY(sheetHeightState, containerHeight) {
+  const isMobile = typeof window === 'undefined' || window.innerWidth <= MOBILE_BREAKPOINT;
+  const bottomObstructed = !isMobile
+    ? 0
+    : sheetHeightState === 'half'
+      ? containerHeight * 0.5
+      : sheetHeightState === 'full'
+        ? containerHeight * 0.97
+        : sheetHeightState === 'peek'
+          ? SHEET_PEEK_HEIGHT_PX
+          : 0;
+
+  const visibleTop = TOP_BAR_HEIGHT_PX;
+  const visibleBottom = containerHeight - bottomObstructed;
+  return visibleBottom - VISIBLE_BOTTOM_RATIO * (visibleBottom - visibleTop);
+}
+
 // 줌아웃했을 때 마커가 너무 빽빽해 보이지 않도록 묶어서 보여줄 때 쓰는 클러스터 뱃지 스타일
 const CLUSTER_STYLE = {
   width: '40px',
@@ -26,15 +52,40 @@ const CLUSTER_STYLE = {
   boxShadow: '0 2px 6px rgba(20, 20, 10, 0.25)',
 };
 
-export default function KakaoMapView({ apiKey, userLocation, places, selectedPlace, onSelectPlace, onBoundsChange }) {
+export default function KakaoMapView({
+  apiKey,
+  userLocation,
+  places,
+  selectedPlace,
+  onSelectPlace,
+  onBoundsChange,
+  sheetHeightState,
+}) {
   const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services', 'clusterer'] });
   const mapRef = useRef(null);
 
+  // 상단바/바텀시트에 가리지 않는 보이는 영역의 아래쪽 40% 지점에 대상이 오도록 이동
+  const centerWithOffset = useCallback(
+    (target) => {
+      const map = mapRef.current;
+      if (!map || !target) return;
+
+      const targetLatLng = new window.kakao.maps.LatLng(target.lat, target.lng);
+      const node = map.getNode();
+      const height = node.clientHeight;
+      const desiredY = getVisibleTargetY(sheetHeightState, height);
+
+      const projection = map.getProjection();
+      const targetPoint = projection.containerPointFromCoords(targetLatLng);
+      const centerPoint = new window.kakao.maps.Point(targetPoint.x, targetPoint.y + (height / 2 - desiredY));
+      map.panTo(projection.coordsFromContainerPoint(centerPoint));
+    },
+    [sheetHeightState],
+  );
+
   const handleRecenter = useCallback(() => {
-    const map = mapRef.current;
-    if (!map || !userLocation) return;
-    map.panTo(new window.kakao.maps.LatLng(userLocation.lat, userLocation.lng));
-  }, [userLocation]);
+    centerWithOffset(userLocation);
+  }, [centerWithOffset, userLocation]);
 
   const emitBounds = useCallback(
     (map) => {
@@ -57,12 +108,13 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
     [emitBounds],
   );
 
-  // 장소를 선택했을 때만 그 위치로 이동하고, 닫을 때(선택 해제)는 지도를 그대로 둠
+  // 장소를 선택했을 때 그 위치로 이동. 선택된 장소가 없으면 상단바/바텀시트 높이가
+  // 바뀔 때 현재 위치가 가려지지 않도록 다시 맞춰줌. 닫을 때(선택 해제)는 지도를 그대로 둠
   useEffect(() => {
-    if (!selectedPlace || !mapRef.current) return;
-    mapRef.current.panTo(new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng));
+    if (!mapRef.current) return;
+    centerWithOffset(selectedPlace ?? userLocation);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPlace?.id]);
+  }, [selectedPlace?.id, sheetHeightState]);
 
   if (loading || error) {
     return (
