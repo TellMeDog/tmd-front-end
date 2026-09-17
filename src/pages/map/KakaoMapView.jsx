@@ -1,6 +1,6 @@
 import { LocateFixed, PawPrint } from 'lucide-react';
-import { useCallback, useRef } from 'react';
-import { CustomOverlayMap, Map, useKakaoLoader } from 'react-kakao-maps-sdk';
+import { useCallback, useEffect, useRef } from 'react';
+import { CustomOverlayMap, Map, MarkerClusterer, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { CATEGORY_ICON_MAP } from '../../constants/placeCategories';
 import styles from './MapPage.module.css';
 
@@ -8,10 +8,26 @@ const STATUS_PIN_CLASS = {
   available: 'pinAvailable',
   conditional: 'pinConditional',
   verify: 'pinVerify',
+  unknown: 'pinUnknown',
+};
+
+// 줌아웃했을 때 마커가 너무 빽빽해 보이지 않도록 묶어서 보여줄 때 쓰는 클러스터 뱃지 스타일
+const CLUSTER_STYLE = {
+  width: '40px',
+  height: '40px',
+  lineHeight: '40px',
+  textAlign: 'center',
+  borderRadius: '50%',
+  border: '3px solid #fff',
+  background: '#f6951c',
+  color: '#fff',
+  fontSize: '14px',
+  fontWeight: '700',
+  boxShadow: '0 2px 6px rgba(20, 20, 10, 0.25)',
 };
 
 export default function KakaoMapView({ apiKey, userLocation, places, selectedPlace, onSelectPlace, onBoundsChange }) {
-  const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services'] });
+  const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services', 'clusterer'] });
   const mapRef = useRef(null);
 
   const handleRecenter = useCallback(() => {
@@ -41,6 +57,13 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
     [emitBounds],
   );
 
+  // 장소를 선택했을 때만 그 위치로 이동하고, 닫을 때(선택 해제)는 지도를 그대로 둠
+  useEffect(() => {
+    if (!selectedPlace || !mapRef.current) return;
+    mapRef.current.panTo(new window.kakao.maps.LatLng(selectedPlace.lat, selectedPlace.lng));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPlace?.id]);
+
   if (loading || error) {
     return (
       <span className={styles.mapStatus}>
@@ -52,7 +75,7 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
   return (
     <>
       <Map
-        center={selectedPlace ?? userLocation}
+        center={userLocation}
         level={5}
         isPanto
         className={styles.map}
@@ -62,32 +85,34 @@ export default function KakaoMapView({ apiKey, userLocation, places, selectedPla
         <CustomOverlayMap position={userLocation}>
           <span className={styles.meMarker} />
         </CustomOverlayMap>
-        {places.map((place) => {
-          const isSelected = place.id === selectedPlace?.id;
-          const toneClass = styles[STATUS_PIN_CLASS[place.status] ?? 'pinConditional'];
-          const CategoryIcon = CATEGORY_ICON_MAP[place.category] ?? PawPrint;
-          return (
-            <CustomOverlayMap
-              key={place.id}
-              position={{ lat: place.lat, lng: place.lng }}
-              zIndex={isSelected ? 20 : 1}
-              yAnchor={1}
-            >
-              <button
-                type="button"
-                className={`${styles.pin} ${toneClass} ${isSelected ? styles.pinSelected : ''}`}
-                onClick={() => onSelectPlace(place.id)}
-                aria-label={place.name}
+        <MarkerClusterer gridSize={60} minLevel={6} styles={[CLUSTER_STYLE]}>
+          {places.map((place) => {
+            const isSelected = place.id === selectedPlace?.id;
+            const toneClass = styles[STATUS_PIN_CLASS[place.status] ?? 'pinConditional'];
+            const CategoryIcon = CATEGORY_ICON_MAP[place.category] ?? PawPrint;
+            return (
+              <CustomOverlayMap
+                key={place.id}
+                position={{ lat: place.lat, lng: place.lng }}
+                zIndex={isSelected ? 20 : 1}
+                yAnchor={1}
               >
-                <CategoryIcon
-                  size={14}
-                  strokeWidth={2.5}
-                  style={place.category === '카페' ? { transform: 'rotate(45deg) translateX(0.75px)' } : undefined}
-                />
-              </button>
-            </CustomOverlayMap>
-          );
-        })}
+                <button
+                  type="button"
+                  className={`${styles.pin} ${toneClass} ${isSelected ? styles.pinSelected : ''}`}
+                  onClick={() => onSelectPlace(place.id)}
+                  aria-label={place.name}
+                >
+                  <CategoryIcon
+                    size={14}
+                    strokeWidth={2.5}
+                    style={place.category === '카페' ? { transform: 'rotate(45deg) translateX(0.75px)' } : undefined}
+                  />
+                </button>
+              </CustomOverlayMap>
+            );
+          })}
+        </MarkerClusterer>
       </Map>
 
       <button
