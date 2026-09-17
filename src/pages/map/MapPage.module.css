@@ -17,6 +17,30 @@
   z-index: 20;
   padding-bottom: 4px;
 }
+.errorBanner,
+.emptyBanner {
+  position: absolute;
+  top: 68px;
+  left: 12px;
+  right: 12px;
+  z-index: 20;
+  display: block;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 650;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+.errorBanner {
+  background: #fff0e6;
+  color: #b95b21;
+}
+.emptyBanner {
+  background: #fff;
+  color: var(--color-text-subtle);
+  border: 1px solid var(--color-border);
+}
 .locateButton {
   position: absolute;
   bottom: 7px;
@@ -31,6 +55,11 @@
   box-shadow: var(--shadow-sm);
   display: grid;
   place-items: center;
+}
+@media (max-width: 767px) {
+  .locateButton {
+    bottom: 112px;
+  }
 }
 .mapStatus {
   color: var(--color-text-subtle);
@@ -71,6 +100,9 @@
 }
 .pinVerify {
   background: var(--color-danger);
+}
+.pinUnknown {
+  background: #8b908a;
 }
 .pinSelected {
   width: 40px;
