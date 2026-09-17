@@ -15,7 +15,9 @@ const STATUS_PIN_CLASS = {
 
 export default function KakaoMapPreview({ apiKey, places = [], onBoundsChange }) {
   const { location } = useCurrentLocation();
-  const [loading, error] = useKakaoLoader({ appkey: apiKey });
+  // 지도 페이지(KakaoMapView)와 라이브러리 옵션이 다르면 Kakao SDK 로더가 이미 로드된
+  // 것으로 판단해 clusterer/services를 실제로 불러오지 않는 문제가 있어 동일하게 맞춤
+  const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services', 'clusterer'] });
 
   const handleCreate = useCallback(
     (map) => {
