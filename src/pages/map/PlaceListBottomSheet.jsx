@@ -2,15 +2,9 @@ import { Heart, MapPin, Star } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { addFavorite, deleteFavorite } from '../../api/favorites.api';
+import { PLACE_STATUS_META } from '../../constants/placeStatus';
 import { useAuthStore } from '../../stores/auth.store';
 import styles from './PlaceListBottomSheet.module.css';
-
-const STATUS_META = {
-  available: { label: '입장 가능', tone: 'available' },
-  conditional: { label: '조건부 가능', tone: 'conditional' },
-  verify: { label: '확인 필요', tone: 'verify' },
-  unknown: { label: '정보 없음', tone: 'unknown' },
-};
 
 const PEEK_HEIGHT_PX = 128;
 const HALF_RATIO = 0.5;
@@ -126,7 +120,7 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
 
       <ul className={styles.list}>
         {places.map((place) => {
-          const status = STATUS_META[place.status] ?? STATUS_META.unknown;
+          const status = PLACE_STATUS_META[place.status] ?? PLACE_STATUS_META.unknown;
           const favorite = isFavorite(place);
           return (
             <li key={place.id} className={styles.item}>

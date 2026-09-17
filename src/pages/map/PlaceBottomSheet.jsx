@@ -4,17 +4,11 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '../../api/client';
 import { addFavorite, deleteFavorite } from '../../api/favorites.api';
 import { getPlaceDetail } from '../../api/places.api';
+import { PLACE_STATUS_META } from '../../constants/placeStatus';
 import { useAuthStore } from '../../stores/auth.store';
 import ReviewSection from '../../components/review/ReviewSection';
 import { useDraggableSheet } from './useDraggableSheet';
 import styles from './PlaceBottomSheet.module.css';
-
-const STATUS_META = {
-  available: { label: '입장 가능', tone: 'available' },
-  conditional: { label: '조건부 가능', tone: 'conditional' },
-  verify: { label: '확인 필요', tone: 'verify' },
-  unknown: { label: '정보 없음', tone: 'unknown' },
-};
 
 const POLICY_FIELDS = [
   ['acmpyTypeCd', '동반 유형'],
@@ -88,7 +82,7 @@ export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }
   };
 
   if (!place) return null;
-  const status = STATUS_META[place.status] ?? STATUS_META.unknown;
+  const status = PLACE_STATUS_META[place.status] ?? PLACE_STATUS_META.unknown;
   const address = [detail?.addr1, detail?.addr2].filter(Boolean).join(' ');
   const policyRows = POLICY_FIELDS.map(([key, label]) => [label, detail?.petPolicyInfo?.[key]]).filter(
     ([, value]) => value,
