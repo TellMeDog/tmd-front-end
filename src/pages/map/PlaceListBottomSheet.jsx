@@ -1,5 +1,8 @@
 import { Heart, MapPin, Star } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { addFavorite, deleteFavorite } from '../../api/favorites.api';
+import { useAuthStore } from '../../stores/auth.store';
 import styles from './PlaceListBottomSheet.module.css';
 
 const STATUS_META = {
@@ -14,8 +17,13 @@ const HALF_RATIO = 0.5;
 const FULL_RATIO = 0.97;
 
 export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightStateChange }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const accessToken = useAuthStore((state) => state.accessToken);
   const [heightState, setHeightState] = useState('half');
   const [dragHeight, setDragHeight] = useState(null);
+  const [favoriteOverrides, setFavoriteOverrides] = useState({});
+  const [pendingIds, setPendingIds] = useState(() => new Set());
   const sheetRef = useRef(null);
   const dragRef = useRef(null);
 
@@ -27,8 +35,36 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
   useEffect(() => {
     updateHeightState('half');
     setDragHeight(null);
+    setFavoriteOverrides({});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [places]);
+
+  const isFavorite = (place) => favoriteOverrides[place.id] ?? place.favorite;
+
+  const handleToggleFavorite = async (event, place) => {
+    event.stopPropagation();
+    if (!accessToken) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+    if (pendingIds.has(place.id)) return;
+
+    const nextFavorite = !isFavorite(place);
+    setFavoriteOverrides((prev) => ({ ...prev, [place.id]: nextFavorite }));
+    setPendingIds((prev) => new Set(prev).add(place.id));
+    try {
+      if (nextFavorite) await addFavorite(place.id);
+      else await deleteFavorite(place.id);
+    } catch {
+      setFavoriteOverrides((prev) => ({ ...prev, [place.id]: !nextFavorite }));
+    } finally {
+      setPendingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(place.id);
+        return next;
+      });
+    }
+  };
 
   const handlePointerDown = (event) => {
     const containerHeight = sheetRef.current?.parentElement?.clientHeight;
@@ -91,8 +127,9 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
       <ul className={styles.list}>
         {places.map((place) => {
           const status = STATUS_META[place.status] ?? STATUS_META.unknown;
+          const favorite = isFavorite(place);
           return (
-            <li key={place.id}>
+            <li key={place.id} className={styles.item}>
               <button type="button" className={styles.card} onClick={() => onSelectPlace(place.id)}>
                 <span className={styles.thumb} data-tone={status.tone}>
                   {place.image ? <img src={place.image} alt="" /> : <MapPin size={20} />}
@@ -111,8 +148,15 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
                       {place.rating.toFixed(1)}
                     </span>
                   )}
-                  {place.favorite && <Heart size={16} fill="currentColor" className={styles.favoriteIcon} />}
                 </span>
+              </button>
+              <button
+                type="button"
+                className={`${styles.favoriteButton} ${favorite ? styles.favoriteActive : ''}`}
+                onClick={(event) => handleToggleFavorite(event, place)}
+                aria-label={favorite ? '즐겨찾기 해제' : '즐겨찾기 추가'}
+              >
+                <Heart size={16} fill={favorite ? 'currentColor' : 'none'} />
               </button>
             </li>
           );
