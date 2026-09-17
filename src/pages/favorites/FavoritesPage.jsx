@@ -73,7 +73,7 @@ export default function FavoritesPage() {
       <span className="eyebrow">SAVED PLACES</span>
       <h1 className="page-title">즐겨찾기</h1>
       <p className="page-description">반려견과 가고 싶은 장소를 모아두었어요.</p>
-      {pets.length > 1 && (
+      {/* {pets.length > 1 && (
         <div className={styles.petSelector}>
           <span>반려동물</span>
           <CustomSelect
@@ -86,7 +86,7 @@ export default function FavoritesPage() {
             }}
           />
         </div>
-      )}
+      )*/}
       {!isPetLoading && !isLoading && pets.length === 0 && (
         <section className={`card empty-state ${styles.favoriteEmpty}`}>
           <Heart size={40} />
