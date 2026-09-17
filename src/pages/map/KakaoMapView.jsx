@@ -2,6 +2,7 @@ import { LocateFixed, PawPrint } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { CustomOverlayMap, Map, MarkerClusterer, useKakaoLoader } from 'react-kakao-maps-sdk';
 import { CATEGORY_ICON_MAP } from '../../constants/placeCategories';
+import { loadMapViewState, saveMapViewState } from '../../utils/mapViewState';
 import styles from './MapPage.module.css';
 
 const STATUS_PIN_CLASS = {
@@ -66,6 +67,9 @@ export default function KakaoMapView({
 }) {
   const [loading, error] = useKakaoLoader({ appkey: apiKey, libraries: ['services', 'clusterer'] });
   const mapRef = useRef(null);
+  // 장소 상세 페이지에 다녀와도 지도 위치/줌이 그대로 복귀되도록, 저장돼 있으면
+  // 그 값으로 초기 중심/레벨을 잡음(마운트 시 1회만 읽음)
+  const initialViewRef = useRef(loadMapViewState());
   // 지도가 지역 중심으로 이동한 뒤, 바텀시트 높이 변화로 인한 재중심 계산에서도
   // 사용자 위치가 아닌 이 좌표를 기준으로 삼기 위해 저장해 둠 (region이 풀렸을 때
   // 이 값이 null로 바뀌는 것 자체가 지도를 다시 이동시키지는 않도록 ref로도 들고 있음)
@@ -140,6 +144,9 @@ export default function KakaoMapView({
         sw: { lat: sw.getLat(), lng: sw.getLng() },
         ne: { lat: ne.getLat(), lng: ne.getLng() },
       });
+
+      const center = map.getCenter();
+      saveMapViewState({ center: { lat: center.getLat(), lng: center.getLng() }, level: map.getLevel() });
     },
     [onBoundsChange],
   );
@@ -189,8 +196,8 @@ export default function KakaoMapView({
   return (
     <>
       <Map
-        center={userLocation}
-        level={5}
+        center={initialViewRef.current?.center ?? userLocation}
+        level={initialViewRef.current?.level ?? 5}
         isPanto
         className={styles.map}
         onCreate={handleCreate}
