@@ -1,5 +1,6 @@
 import { Check, ChevronDown } from 'lucide-react';
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './CustomSelect.module.css';
 
 const normalize = (text) =>
@@ -23,11 +24,13 @@ export default function CustomSelect({
   disabled = false,
 }) {
   const rootRef = useRef(null);
+  const menuRef = useRef(null);
   const listboxId = useId();
   const selectedOption = options.find((option) => option.value === value);
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [menuRect, setMenuRect] = useState(null);
   const visibleOptions = useMemo(() => {
     const normalizedQuery = normalize(query);
     if (!searchable || !normalizedQuery) return options;
@@ -45,7 +48,7 @@ export default function CustomSelect({
     if (!open) return undefined;
 
     const closeOutside = (event) => {
-      if (!rootRef.current?.contains(event.target)) {
+      if (!rootRef.current?.contains(event.target) && !menuRef.current?.contains(event.target)) {
         setOpen(false);
         setQuery('');
       }
@@ -56,6 +59,25 @@ export default function CustomSelect({
     return () => {
       document.removeEventListener('pointerdown', closeOutside);
       document.removeEventListener('focusin', closeOutside);
+    };
+  }, [open]);
+
+  // 옵션 목록을 portal로 body에 그려서, 지도 바텀시트 등 topBar보다 높은 z-index를 가진
+  // 형제 요소에 옵션 목록이 가려지지 않도록 함
+  useEffect(() => {
+    if (!open) return undefined;
+
+    const updateMenuRect = () => {
+      const rect = rootRef.current?.getBoundingClientRect();
+      if (rect) setMenuRect(rect);
+    };
+
+    updateMenuRect();
+    window.addEventListener('scroll', updateMenuRect, true);
+    window.addEventListener('resize', updateMenuRect);
+    return () => {
+      window.removeEventListener('scroll', updateMenuRect, true);
+      window.removeEventListener('resize', updateMenuRect);
     };
   }, [open]);
 
@@ -155,42 +177,54 @@ export default function CustomSelect({
           <ChevronDown aria-hidden="true" size={18} />
         </button>
       )}
-      {open && (
-        <ul
-          id={listboxId}
-          className={`${styles.options} ${placement === 'top' ? styles.top : ''}`}
-          role="listbox"
-        >
-          {visibleOptions.length > 0 ? (
-            visibleOptions.map((option, index) => {
-              const selected = option.value === value;
-              return (
-                <li
-                  id={`${listboxId}-${index}`}
-                  key={option.value}
-                  role="option"
-                  aria-selected={selected}
-                >
-                  <button
-                    className={`${styles.option} ${index === activeIndex ? styles.active : ''}`}
-                    type="button"
-                    onPointerEnter={() => setActiveIndex(index)}
-                    onClick={() => selectOption(option)}
+      {open &&
+        menuRect &&
+        createPortal(
+          <ul
+            id={listboxId}
+            ref={menuRef}
+            className={styles.options}
+            role="listbox"
+            style={{
+              position: 'fixed',
+              left: menuRect.left,
+              width: menuRect.width,
+              ...(placement === 'top'
+                ? { bottom: window.innerHeight - menuRect.top + 8 }
+                : { top: menuRect.bottom + 8 }),
+            }}
+          >
+            {visibleOptions.length > 0 ? (
+              visibleOptions.map((option, index) => {
+                const selected = option.value === value;
+                return (
+                  <li
+                    id={`${listboxId}-${index}`}
+                    key={option.value}
+                    role="option"
+                    aria-selected={selected}
                   >
-                    <span className={styles.optionText}>
-                      <span>{option.label}</span>
-                      {option.description && <small>{option.description}</small>}
-                    </span>
-                    {selected && <Check aria-hidden="true" size={17} />}
-                  </button>
-                </li>
-              );
-            })
-          ) : (
-            <li className={styles.empty}>{emptyMessage}</li>
-          )}
-        </ul>
-      )}
+                    <button
+                      className={`${styles.option} ${index === activeIndex ? styles.active : ''}`}
+                      type="button"
+                      onPointerEnter={() => setActiveIndex(index)}
+                      onClick={() => selectOption(option)}
+                    >
+                      <span className={styles.optionText}>
+                        <span>{option.label}</span>
+                        {option.description && <small>{option.description}</small>}
+                      </span>
+                      {selected && <Check aria-hidden="true" size={17} />}
+                    </button>
+                  </li>
+                );
+              })
+            ) : (
+              <li className={styles.empty}>{emptyMessage}</li>
+            )}
+          </ul>,
+          document.body,
+        )}
     </div>
   );
 }
