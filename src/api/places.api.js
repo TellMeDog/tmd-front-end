@@ -1,10 +1,6 @@
-import { places } from '../mocks/data/places';
 import { usePetStore } from '../stores/pet.store';
 import { formatDistanceKm } from '../utils/geo';
-import { apiRequest, mockRequest } from './client';
-
-export const getPlaces = () => mockRequest(places);
-export const getPlace = (placeId) => mockRequest(places.find(({ id }) => id === Number(placeId)));
+import { apiRequest } from './client';
 
 // 사용자가 선택한 반려동물(없으면 대표(첫 번째) 반려동물)의 petId를 사용
 const getRepresentativePetId = () => {
@@ -19,7 +15,8 @@ const MARKER_COLOR_STATUS = {
   GREY: 'unknown',
 };
 
-const toPlace = (marker, category) => {
+// 장소 상세 페이지에서도 마커 응답을 동일한 형태로 다뤄야 해서 export
+export const toPlace = (marker, category) => {
   const distanceKm = marker.distance / 1000;
   return {
     id: marker.placeId,

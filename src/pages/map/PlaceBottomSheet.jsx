@@ -1,32 +1,20 @@
-import { Heart, MapPin, Navigation, PawPrint, X } from 'lucide-react';
-import { useCallback, useEffect, useState } from 'react';
+import { Heart, MapPin, Navigation, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { getApiErrorMessage } from '../../api/client';
 import { addFavorite, deleteFavorite } from '../../api/favorites.api';
-import { getPlaceDetail } from '../../api/places.api';
 import { PLACE_STATUS_META } from '../../constants/placeStatus';
 import { useAuthStore } from '../../stores/auth.store';
-import ReviewSection from '../../components/review/ReviewSection';
 import { useDraggableSheet } from './useDraggableSheet';
 import styles from './PlaceBottomSheet.module.css';
 
-const POLICY_FIELDS = [
-  ['acmpyTypeCd', '동반 유형'],
-  ['acmpyPsblCpam', '동반 가능 동물'],
-  ['acmpyNeedMtr', '동반 시 필요사항'],
-  ['relaAcdntRiskMtr', '안전사고 위험요소'],
-  ['relaPosesFclty', '보유 시설'],
-  ['relaFrnshPrdlst', '비치 제품'],
-  ['relaPurcPrdlst', '구매 가능 품목'],
-  ['relaRntlPrdlst', '대여 가능 품목'],
-  ['etcAcmpyInfo', '기타 안내'],
-];
-
+// 장소 상세 정보(리뷰/정책/방문 통계 등)는 더 이상 여기서 조회하지 않음.
+// 마커를 눌렀을 때는 마커 응답만으로 가벼운 미리보기만 보여주고,
+// "상세보기"를 눌러야 실제 상세 페이지(/places/:placeId)에서 조회함
 export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }) {
   const navigate = useNavigate();
   const location = useLocation();
   const accessToken = useAuthStore((state) => state.accessToken);
-  const [detail, setDetail] = useState(null);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isFavoritePending, setIsFavoritePending] = useState(false);
   const [favoriteError, setFavoriteError] = useState('');
@@ -34,24 +22,10 @@ export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }
     onHeightStateChange?.(isExpanded ? 'full' : 'half'),
   );
 
-  const fetchDetail = useCallback(() => {
-    if (!place) return;
-    getPlaceDetail(place.id, { mapX: place.lng, mapY: place.lat })
-      .then(({ data }) => {
-        setDetail(data);
-        setIsFavorite(data?.placeMarkerResponse?.favorite ?? false);
-      })
-      .catch(() => setDetail(null));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [place?.id, place?.lat, place?.lng]);
-
   useEffect(() => {
-    setDetail(null);
     setFavoriteError('');
     setIsFavorite(place?.favorite ?? false);
-    fetchDetail();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [place?.id, place?.lat, place?.lng]);
+  }, [place?.id, place?.favorite]);
 
   useEffect(() => {
     if (!place) return;
@@ -83,11 +57,6 @@ export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }
 
   if (!place) return null;
   const status = PLACE_STATUS_META[place.status] ?? PLACE_STATUS_META.unknown;
-  const address = [detail?.addr1, detail?.addr2].filter(Boolean).join(' ');
-  const policyRows = POLICY_FIELDS.map(([key, label]) => [label, detail?.petPolicyInfo?.[key]]).filter(
-    ([, value]) => value,
-  );
-  const visitStats = detail?.visitStats;
 
   return (
     <section
@@ -116,37 +85,6 @@ export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }
         </div>
         <h2>{place.name}</h2>
         <span className={`${styles.badge} ${styles[status.tone]}`}>{status.label}</span>
-
-        {address && <p className={styles.address}>{address}</p>}
-
-        {visitStats && (visitStats.enteredCount || visitStats.mismatchedCount || visitStats.deniedCount) && (
-          <p className={styles.visitStats}>
-            입장 성공 {visitStats.enteredCount} · 조건과 다름 {visitStats.mismatchedCount} · 거부{' '}
-            {visitStats.deniedCount}
-          </p>
-        )}
-
-        {policyRows.length > 0 && (
-          <div className={styles.policy}>
-            <b>
-              <PawPrint size={16} />
-              반려동반 정책
-            </b>
-            {policyRows.map(([label, value]) => (
-              <p key={label}>
-                <strong>{label}</strong>
-                {value}
-              </p>
-            ))}
-          </div>
-        )}
-
-        <ReviewSection
-          reviews={detail?.reviews?.content ?? []}
-          topBreeds={visitStats?.topBreeds}
-          placeId={place.id}
-          onReviewCreated={fetchDetail}
-        />
 
         {favoriteError && <p className="field-error">{favoriteError}</p>}
 
