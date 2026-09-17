@@ -19,11 +19,11 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
-        <Route path="map" element={<MapPage />} />
         <Route path="places/:placeId" element={<PlaceDetailPage />} />
         <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
         <Route path="places/:placeId/report" element={<VisitReportPage />} />
         <Route element={<ProtectedRoute />}>
+          <Route path="map" element={<MapPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
           <Route path="my" element={<MyPage />} />
           <Route path="my/pets" element={<PetManagePage />} />
