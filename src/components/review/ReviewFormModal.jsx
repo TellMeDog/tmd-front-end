@@ -1,7 +1,7 @@
 import { ImagePlus, Star, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { completeImageUpload, getPresignedUrl, uploadToPresignedUrl } from '../../api/images.api';
+import { uploadImage } from '../../api/images.api';
 import { createReview } from '../../api/reviews.api';
 import { getApiErrorMessage } from '../../api/client';
 import { usePetStore } from '../../stores/pet.store';
@@ -87,12 +87,8 @@ export default function ReviewFormModal({ placeId, petId, onClose, onCreated }) 
     try {
       let imageUploadId;
       if (imageFile) {
-        setPendingStep('이미지 업로드 준비 중...');
-        const presignedData = await getPresignedUrl(imageFile, 'REVIEW');
         setPendingStep('이미지 업로드 중...');
-        await uploadToPresignedUrl(imageFile, presignedData);
-        await completeImageUpload(presignedData.uploadId);
-        imageUploadId = presignedData.uploadId;
+        imageUploadId = await uploadImage(imageFile, 'REVIEW');
       }
 
       setPendingStep('리뷰 등록 중...');

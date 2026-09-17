@@ -30,8 +30,8 @@ export default function LoginPage() {
     }
     setIsSubmitting(true);
     try {
-      const { accessToken } = await login(form);
-      setSession(accessToken);
+      const session = await login(form);
+      setSession(session);
       navigate(location.state?.from ?? '/', { replace: true });
     } catch (requestError) {
       clearSession();

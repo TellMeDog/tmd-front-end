@@ -7,10 +7,19 @@ const SIZE_LABELS = {
 };
 
 export const getPetSizeLabel = (size) => {
-  if (typeof size === 'number') return `${size}kg`;
-  if (typeof size === 'string' && size.trim() !== '' && Number.isFinite(Number(size))) {
-    return `${size}kg`;
+  const numericSize =
+    typeof size === 'number'
+      ? size
+      : typeof size === 'string' && size.trim() !== ''
+        ? Number(size)
+        : NaN;
+
+  if (Number.isFinite(numericSize)) {
+    if (numericSize <= 5) return '소형견';
+    if (numericSize < 10) return '중형견';
+    return '대형견';
   }
+
   return SIZE_LABELS[size] ?? size ?? '크기 미등록';
 };
 
@@ -25,7 +34,15 @@ export const getPetBreedLabel = (breed) =>
 
 export function getPetImageSrc(imageUrl) {
   if (!imageUrl) return '';
-  if (/^(https?:|blob:|data:)/.test(imageUrl)) return imageUrl;
-  const baseUrl = import.meta.env.VITE_IMAGE_BASE_URL?.replace(/\/$/, '');
-  return baseUrl ? `${baseUrl}/${imageUrl.replace(/^\//, '')}` : '';
+  if (/^(blob:|data:)/.test(imageUrl)) return imageUrl;
+
+  if (/^https?:/.test(imageUrl)) {
+    const normalizedUrl = new URL(imageUrl);
+    normalizedUrl.pathname = normalizedUrl.pathname.replace(/\/{2,}/g, '/');
+    return normalizedUrl.toString();
+  }
+
+  const baseUrl = import.meta.env.VITE_IMAGE_BASE_URL?.replace(/\/+$/, '');
+  const imagePath = imageUrl.replace(/^\/+/, '');
+  return baseUrl ? `${baseUrl}/${imagePath}` : '';
 }

@@ -5,13 +5,19 @@ import { useAuthStore } from '../../stores/auth.store';
 let restorePromise = null;
 
 function restoreSession() {
+  if (localStorage.getItem('tmd:signed-out') === 'true') {
+    useAuthStore.getState().clearSession({ signedOut: true });
+    return Promise.resolve();
+  }
   if (!restorePromise) {
+    const hadSession = localStorage.getItem('tmd:has-session') === 'true';
     restorePromise = reissue()
-      .then(({ accessToken }) => {
-        useAuthStore.getState().setSession(accessToken);
+      .then((session) => {
+        useAuthStore.getState().setSession(session);
       })
       .catch(() => {
-        useAuthStore.getState().clearSession();
+        if (hadSession) useAuthStore.getState().expireSession();
+        else useAuthStore.getState().clearSession();
       })
       .finally(() => {
         restorePromise = null;
@@ -27,6 +33,14 @@ export default function AuthBootstrap({ children }) {
   useEffect(() => {
     if (!isAuthReady) restoreSession();
   }, [isAuthReady]);
+
+  if (!isAuthReady) {
+    return (
+      <main className="page simple-status" aria-live="polite">
+        로그인 상태를 확인하고 있어요.
+      </main>
+    );
+  }
 
   return children;
 }

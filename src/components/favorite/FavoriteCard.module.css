@@ -29,6 +29,13 @@
   margin-top: 8px;
   color: var(--color-text-subtle);
 }
+.reportLink {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--color-brand-600);
+  font-size: var(--font-12);
+  font-weight: 700;
+}
 .deleteButton {
   width: 40px;
   height: 40px;

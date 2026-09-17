@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import AppShell from '../components/layout/AppShell';
+import ProtectedRoute from '../components/auth/ProtectedRoute';
 import HomePage from '../pages/home/HomePage';
 import MapPage from '../pages/map/MapPage';
 import FavoritesPage from '../pages/favorites/FavoritesPage';
@@ -12,7 +13,8 @@ import VisitReportPage from '../pages/visit-report/VisitReportPage';
 import PetManagePage from '../pages/pet-manage/PetManagePage';
 import MyReportsPage from '../pages/my-reports/MyReportsPage';
 import SettingsPage from '../pages/settings/SettingsPage';
-import ProtectedRoute from '../components/auth/ProtectedRoute';
+import PetEditPage from '../pages/pet-edit/PetEditPage';
+import ReviewEditPage from '../pages/review-edit/ReviewEditPage';
 
 export default function App() {
   return (
@@ -20,14 +22,18 @@ export default function App() {
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
         <Route path="places/:placeId" element={<PlaceDetailPage />} />
-        <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
-        <Route path="places/:placeId/report" element={<VisitReportPage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="map" element={<MapPage />} />
+          <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
+          <Route path="places/:placeId/report" element={<VisitReportPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
           <Route path="my" element={<MyPage />} />
           <Route path="my/pets" element={<PetManagePage />} />
-          <Route path="my/reports" element={<MyReportsPage />} />
+          <Route path="my/pets/:petId/edit" element={<PetEditPage />} />
+          <Route path="my/reviews" element={<MyReportsPage />} />
+          <Route path="my/reviews/:petId" element={<MyReportsPage />} />
+          <Route path="my/reviews/:reviewId/edit" element={<ReviewEditPage />} />
+          <Route path="my/reports" element={<Navigate to="/my/reviews" replace />} />
           <Route path="my/settings" element={<SettingsPage />} />
         </Route>
       </Route>

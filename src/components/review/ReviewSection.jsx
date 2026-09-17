@@ -1,30 +1,68 @@
-import { PawPrint, Plus, Star } from 'lucide-react';
-import { useState } from 'react';
+import { PawPrint, Plus } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getApiErrorMessage } from '../../api/client';
+import { getPlaceReviewsPage } from '../../api/reviews.api';
 import { useAuthStore } from '../../stores/auth.store';
 import { usePetStore } from '../../stores/pet.store';
 import { withSubjectParticle } from '../../utils/korean';
+import CustomSelect from '../form/CustomSelect';
 import ReviewFormModal from './ReviewFormModal';
+import StarRating from './StarRating';
 import styles from './ReviewSection.module.css';
 
-const TAG_META = [
-  { key: 'ENTERED', label: '잘 맞아요', tone: 'fit' },
-  { key: 'MISMATCHED_INFO', label: '조건과 달랐어요', tone: 'different' },
-  { key: 'DENIED', label: '거부 당했어요', tone: 'rejected' },
-];
+const FEEDBACK_LABEL = {
+  ENTERED: '조건이 맞아요',
+  MISMATCHED_INFO: '조건이 달랐어요',
+  DENIED: '입장을 거부당했어요',
+};
 
 function formatDate(value) {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value ?? '';
-  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+  if (!value) return '';
+  return new Intl.DateTimeFormat('ko-KR', { dateStyle: 'medium' }).format(new Date(value));
 }
 
-export default function ReviewSection({ reviews, topBreeds, placeId, onReviewCreated }) {
+export default function ReviewSection({ placeId, reviews: providedReviews, topBreeds, onReviewCreated }) {
   const navigate = useNavigate();
   const location = useLocation();
   const accessToken = useAuthStore((state) => state.accessToken);
   const petId = usePetStore((state) => state.selectedPetId);
+
+  const [reviews, setReviews] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [sort, setSort] = useState('latest');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    if (providedReviews) {
+      setIsLoading(false);
+      return undefined;
+    }
+    let active = true;
+    setIsLoading(true);
+    setError('');
+    getPlaceReviewsPage(placeId, { page, size: 5, sort })
+      .then((response) => {
+        if (!active) return;
+        setReviews(response?.content ?? []);
+        setTotalPages(response?.totalPages ?? 0);
+      })
+      .catch((requestError) => {
+        if (active) setError(getApiErrorMessage(requestError, '리뷰를 불러오지 못했습니다.'));
+      })
+      .finally(() => {
+        if (active) setIsLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, [page, placeId, providedReviews, sort, reloadKey]);
+
+  const visibleReviews = providedReviews ?? reviews;
 
   const handleWriteReview = () => {
     if (!accessToken) {
@@ -34,60 +72,37 @@ export default function ReviewSection({ reviews, topBreeds, placeId, onReviewCre
     setIsFormOpen(true);
   };
 
-  const writeButton = (
-    <button type="button" className={styles.writeButton} onClick={handleWriteReview}>
-      <Plus size={14} />
-      리뷰 작성
-    </button>
-  );
-
-  const formModal = isFormOpen && (
-    <ReviewFormModal
-      placeId={placeId}
-      petId={petId}
-      onClose={() => setIsFormOpen(false)}
-      onCreated={() => onReviewCreated?.()}
-    />
-  );
-
-  if (!reviews || reviews.length === 0) {
-    return (
-      <div className={styles.section}>
-        <div className={styles.headingRow}>
-          <h3 className={styles.heading}>리뷰</h3>
-          {writeButton}
-        </div>
-        <p className={styles.empty}>아직 등록된 리뷰가 없어요.</p>
-        {formModal}
-      </div>
-    );
-  }
-
-  const counts = reviews.reduce((acc, review) => {
-    acc[review.feedbackType] = (acc[review.feedbackType] ?? 0) + 1;
-    return acc;
-  }, {});
-  const recentDate = reviews.reduce(
-    (latest, review) => (review.createdAt > latest ? review.createdAt : latest),
-    reviews[0].createdAt,
-  );
+  const handleReviewCreated = () => {
+    setPage(0);
+    setReloadKey((key) => key + 1);
+    onReviewCreated?.();
+  };
 
   return (
-    <div className={styles.section}>
-      <div className={styles.headingRow}>
-        <h3 className={styles.heading}>리뷰</h3>
-        {writeButton}
+    <section className={`card ${styles.section}`}>
+      <div className={styles.sectionHead}>
+        <h2>장소 리뷰</h2>
+        <div className={styles.headActions}>
+          {!providedReviews && (
+            <CustomSelect
+              value={sort}
+              options={[
+                { value: 'latest', label: '최신순' },
+                { value: 'rating', label: '별점순' },
+              ]}
+              ariaLabel="리뷰 정렬"
+              onChange={(nextSort) => {
+                setPage(0);
+                setSort(nextSort);
+              }}
+            />
+          )}
+          <button type="button" className={styles.writeButton} onClick={handleWriteReview}>
+            <Plus size={14} />
+            리뷰 작성
+          </button>
+        </div>
       </div>
-
-      <div className={styles.tags}>
-        {TAG_META.map((meta) => (
-          <span key={meta.key} className={`${styles.tag} ${styles[meta.tone]}`}>
-            {meta.label} <b>{counts[meta.key] ?? 0}</b>
-          </span>
-        ))}
-      </div>
-
-      <p className={styles.recent}>최근 리뷰 {formatDate(recentDate)}</p>
 
       {topBreeds?.length > 0 && (
         <p className={styles.insight}>
@@ -96,28 +111,59 @@ export default function ReviewSection({ reviews, topBreeds, placeId, onReviewCre
         </p>
       )}
 
+      {isLoading && <p className={styles.empty}>리뷰를 불러오는 중...</p>}
+      {error && <p className="field-error">{error}</p>}
+      {!isLoading && !error && visibleReviews.length === 0 && (
+        <p className={styles.empty}>아직 등록된 리뷰가 없어요.</p>
+      )}
       <ul className={styles.list}>
-        {reviews.map((review) => (
-          <li key={review.reviewId} className={styles.item}>
+        {visibleReviews.map((review) => (
+          <li key={review.reviewId ?? review.id} className={styles.item}>
             <div className={styles.thumb}>
-              <PawPrint size={20} />
+              {review.imageUrl ? <img src={review.imageUrl} alt="" /> : <PawPrint size={20} />}
             </div>
             <div className={styles.itemBody}>
               <div className={styles.itemHead}>
-                <span className={styles.nickname}>{review.petName ?? '익명'}</span>
-                <span className={styles.stars} aria-label={`별점 ${review.rating}점`}>
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star key={index} size={12} fill={index < review.rating ? 'currentColor' : 'none'} />
-                  ))}
-                </span>
+                <strong>{review.petName ?? review.nickname}</strong>
+                <StarRating value={review.rating} size={14} />
               </div>
-              <span className={styles.date}>{formatDate(review.createdAt)}</span>
-              <p className={styles.text}>{review.content}</p>
+              <span className={styles.date}>
+                {FEEDBACK_LABEL[review.feedbackType] ?? review.tagLabel ?? ''} ·{' '}
+                {formatDate(review.createdAt ?? review.date)}
+              </span>
+              {(review.content ?? review.text) && (
+                <p className={styles.text}>{review.content ?? review.text}</p>
+              )}
             </div>
           </li>
         ))}
       </ul>
-      {formModal}
-    </div>
+      {!providedReviews && totalPages > 1 && (
+        <nav className={styles.pagination} aria-label="리뷰 페이지">
+          <button type="button" disabled={page === 0} onClick={() => setPage((current) => current - 1)}>
+            이전
+          </button>
+          <span>
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            type="button"
+            disabled={page + 1 >= totalPages}
+            onClick={() => setPage((current) => current + 1)}
+          >
+            다음
+          </button>
+        </nav>
+      )}
+
+      {isFormOpen && (
+        <ReviewFormModal
+          placeId={placeId}
+          petId={petId}
+          onClose={() => setIsFormOpen(false)}
+          onCreated={handleReviewCreated}
+        />
+      )}
+    </section>
   );
 }

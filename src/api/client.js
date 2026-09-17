@@ -3,6 +3,7 @@ import { useAuthStore } from '../stores/auth.store';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
 
 let refreshPromise = null;
+const inFlightGetRequests = new Map();
 
 export class ApiError extends Error {
   constructor(message, { status = 0, code = 'NETWORK_ERROR', fieldErrors = [] } = {}) {
@@ -60,34 +61,67 @@ async function execute(path, options = {}) {
   }
 
   if (response.status === 401 && auth && retryOnUnauthorized) {
-    if (!refreshPromise) {
-      refreshPromise = execute('/auth/reissue', {
-        method: 'POST',
-        auth: false,
-        retryOnUnauthorized: false,
-      })
-        .then(({ accessToken: newAccessToken }) => {
-          useAuthStore.getState().setAccessToken(newAccessToken);
-          return newAccessToken;
-        })
-        .catch((error) => {
-          useAuthStore.getState().clearSession();
-          throw error;
-        })
-        .finally(() => {
-          refreshPromise = null;
-        });
+    try {
+      await refreshAccessToken();
+    } catch (error) {
+      useAuthStore.getState().expireSession();
+      throw error;
     }
-
-    await refreshPromise;
     return execute(path, { ...options, retryOnUnauthorized: false });
   }
 
   return parseResponse(response);
 }
 
-export function apiRequest(path, options) {
-  return execute(path, options);
+export function refreshAccessToken() {
+  if (!refreshPromise) {
+    refreshPromise = execute('/auth/reissue', {
+      method: 'POST',
+      auth: false,
+      retryOnUnauthorized: false,
+    })
+      .then((session) => {
+        if (!session?.accessToken) {
+          throw new ApiError('로그인 정보를 다시 확인해 주세요.', {
+            status: 401,
+            code: 'INVALID_REISSUE_RESPONSE',
+          });
+        }
+        useAuthStore.getState().setAccessToken(session.accessToken);
+        return session;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+}
+
+function createGetRequestKey(path, options) {
+  const auth = options.auth !== false;
+  const accessToken = auth ? (useAuthStore.getState().accessToken ?? '') : '';
+  const headers = [...new Headers(options.headers).entries()].sort(([a], [b]) =>
+    a.localeCompare(b),
+  );
+  return JSON.stringify([path, auth, accessToken, headers]);
+}
+
+export function apiRequest(path, options = {}) {
+  const method = (options.method ?? 'GET').toUpperCase();
+  if (method !== 'GET') return execute(path, options);
+
+  const requestKey = createGetRequestKey(path, options);
+  const pendingRequest = inFlightGetRequests.get(requestKey);
+  if (pendingRequest) return pendingRequest;
+
+  const request = execute(path, options).finally(() => {
+    if (inFlightGetRequests.get(requestKey) === request) {
+      inFlightGetRequests.delete(requestKey);
+    }
+  });
+  inFlightGetRequests.set(requestKey, request);
+  return request;
 }
 
 export function getApiErrorMessage(error, fallback = '요청을 처리하지 못했습니다.') {

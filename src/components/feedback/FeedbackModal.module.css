@@ -1,0 +1,139 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  background: rgba(28, 24, 18, 0.48);
+  backdrop-filter: blur(4px);
+  display: grid;
+  place-items: center;
+  animation: fadeIn 160ms ease-out;
+}
+
+.modal {
+  position: relative;
+  width: min(100%, 420px);
+  padding: 32px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-24);
+  background: var(--color-white);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  animation: riseIn 200ms ease-out;
+}
+
+.closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-text-subtle);
+  display: grid;
+  place-items: center;
+}
+
+.closeButton:hover {
+  background: var(--color-bg);
+}
+
+.icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 20px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+}
+
+.icon.brand {
+  background: var(--color-brand-100);
+  color: var(--color-brand-600);
+}
+
+.icon.success {
+  background: #e8f6ee;
+  color: var(--color-success);
+}
+
+.icon.danger {
+  background: #fff0ef;
+  color: var(--color-danger);
+}
+
+.modal h2 {
+  font-size: var(--font-24);
+  letter-spacing: -0.04em;
+}
+
+.modal p {
+  margin-top: 12px;
+  color: var(--color-text-subtle);
+  font-size: var(--font-16);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.actions {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.actions > :only-child {
+  grid-column: 1 / -1;
+}
+
+.confirmButton {
+  min-height: 48px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: var(--radius-12);
+  color: var(--color-white);
+  font-weight: 700;
+}
+
+.confirmButton.brand,
+.confirmButton.success {
+  background: var(--color-brand-500);
+}
+
+.confirmButton.brand:hover,
+.confirmButton.success:hover {
+  background: var(--color-brand-600);
+}
+
+.confirmButton.danger {
+  background: var(--color-danger);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes riseIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+}
+
+@media (max-width: 480px) {
+  .modal {
+    padding: 28px 20px 20px;
+    border-radius: var(--radius-20, 20px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop,
+  .modal {
+    animation: none;
+  }
+}

@@ -17,6 +17,9 @@ export default function FavoriteCard({ favorite, deleting, onDelete }) {
           <Link to={`/places/${favorite.placeId}`}>{favorite.title}</Link>
         </h2>
         <p>{favorite.addr || '주소 정보가 없습니다.'}</p>
+        <Link className={styles.reportLink} to={`/places/${favorite.placeId}/report`}>
+          제보하기
+        </Link>
       </div>
       <button
         className={styles.deleteButton}

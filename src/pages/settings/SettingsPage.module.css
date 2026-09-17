@@ -1,7 +1,15 @@
-.actions {
-  margin-top: 32px;
+.page {
+  min-height: calc(100dvh - 72px);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+}
+
+.actions {
+  margin-top: auto;
+  padding-top: 48px;
+  align-self: flex-end;
+  display: flex;
+  justify-content: flex-end;
   gap: 12px;
 }
 .deleteButton {
@@ -10,7 +18,13 @@
   border: 1px solid #ffd5d5;
 }
 @media (max-width: 767px) {
+  .page {
+    min-height: calc(100dvh - 60px);
+  }
+
   .actions {
-    display: grid;
+    width: 100%;
+    padding-top: 40px;
+    justify-content: flex-end;
   }
 }

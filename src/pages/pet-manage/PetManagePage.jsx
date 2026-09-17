@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { deletePet, getPets } from '../../api/pets.api';
 import { getApiErrorMessage } from '../../api/client';
 import PetFormModal from '../../components/pet/PetFormModal';
+import FeedbackModal from '../../components/feedback/FeedbackModal';
 import { usePetStore } from '../../stores/pet.store';
 import { getPetBreedLabel, getPetImageSrc, getPetSizeLabel } from '../../utils/pet';
 import styles from '../shared/ServiceFlows.module.css';
@@ -12,10 +13,11 @@ export default function PetManagePage() {
   const appendPets = usePetStore((state) => state.appendPets);
   const replacePet = usePetStore((state) => state.replacePet);
   const removePet = usePetStore((state) => state.removePet);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(pets.length === 0);
   const [error, setError] = useState('');
   const [formState, setFormState] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -41,14 +43,15 @@ export default function PetManagePage() {
   };
 
   const handleDelete = async (pet) => {
-    if (!window.confirm(`${pet.name}의 정보를 삭제할까요?`)) return;
     setDeletingId(pet.petId);
     setError('');
     try {
       await deletePet(pet.petId);
       removePet(pet.petId);
+      setDeleteTarget(null);
     } catch (requestError) {
       setError(getApiErrorMessage(requestError, '반려동물 정보를 삭제하지 못했습니다.'));
+      setDeleteTarget(null);
     } finally {
       setDeletingId(null);
     }
@@ -59,7 +62,9 @@ export default function PetManagePage() {
       <span className="eyebrow">MY PETS</span>
       <h1 className="page-title">반려동물 관리</h1>
       <p className="page-description">함께 외출할 반려동물의 정보를 관리해요.</p>
-      {isLoading && <p className="simple-status">반려동물 정보를 불러오는 중...</p>}
+      {isLoading && pets.length === 0 && (
+        <p className="simple-status">반려동물 정보를 불러오는 중...</p>
+      )}
       {error && <p className="field-error">{error}</p>}
       {!isLoading && !error && pets.length === 0 && (
         <section className="card empty-state">
@@ -80,7 +85,7 @@ export default function PetManagePage() {
           <div>
             <h2>{pet.name}</h2>
             <p className="page-description">
-              {getPetBreedLabel(pet.breed)} · {getPetSizeLabel(pet.size)}
+              {getPetBreedLabel(pet.breed)} · {getPetSizeLabel(pet.weight)} · {pet.weight}kg
             </p>
           </div>
           <div className={styles.petActions}>
@@ -95,7 +100,7 @@ export default function PetManagePage() {
             <button
               className={`${styles.deletePetButton} button`}
               type="button"
-              onClick={() => handleDelete(pet)}
+              onClick={() => setDeleteTarget(pet)}
               disabled={deletingId === pet.petId}
             >
               <Trash2 size={17} />
@@ -122,6 +127,17 @@ export default function PetManagePage() {
           onSaved={handleSaved}
         />
       )}
+      <FeedbackModal
+        open={Boolean(deleteTarget)}
+        type="confirm"
+        tone="danger"
+        title={`${deleteTarget?.name ?? ''} 정보를 삭제할까요?`}
+        description="삭제하면 이 반려동물을 기준으로 저장한 정보를 이용하기 어려울 수 있어요."
+        confirmLabel="삭제"
+        pending={deletingId === deleteTarget?.petId}
+        onConfirm={() => handleDelete(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+      />
     </main>
   );
 }

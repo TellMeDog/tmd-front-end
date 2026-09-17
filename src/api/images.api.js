@@ -11,6 +11,9 @@ export const getPresignedUrl = (file, usage) =>
     },
   });
 
+export const completeUpload = (uploadId) =>
+  apiRequest(`/images/uploads/${uploadId}/complete`, { method: 'POST' });
+
 export async function uploadToPresignedUrl(file, { presignedUrl, requiredHeaders }) {
   let response;
   try {
@@ -28,5 +31,9 @@ export async function uploadToPresignedUrl(file, { presignedUrl, requiredHeaders
   }
 }
 
-export const completeImageUpload = (uploadId) =>
-  apiRequest(`/images/uploads/${uploadId}/complete`, { method: 'POST' });
+export async function uploadImage(file, usage) {
+  const presignedData = await getPresignedUrl(file, usage);
+  await uploadToPresignedUrl(file, presignedData);
+  await completeUpload(presignedData.uploadId);
+  return presignedData.uploadId;
+}
