@@ -88,6 +88,21 @@ export const getHomePlaces = async ({ origin, petId = getRepresentativePetId() }
   return { success: true, data: markers.map((marker) => toPlace(marker, null)) };
 };
 
+export const getPlacesByRegion = async (
+  regionName,
+  regionDetailName,
+  { petId = getRepresentativePetId(), origin } = {},
+) => {
+  if (!regionName || !regionDetailName || !petId || !origin) return { success: true, data: [] };
+
+  const query = new URLSearchParams({ petId, currMapX: origin.lng, currMapY: origin.lat });
+  const markers = await apiRequest(
+    `/places/region/${encodeURIComponent(regionName)}/${encodeURIComponent(regionDetailName)}?${query}`,
+  );
+
+  return { success: true, data: markers.map((marker) => toPlace(marker, null)) };
+};
+
 export const searchPlacesByKeyword = async (
   keyword,
   { petId = getRepresentativePetId(), origin } = {},
