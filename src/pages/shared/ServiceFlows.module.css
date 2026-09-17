@@ -185,7 +185,7 @@
   max-height: 80px;
   border-radius: inherit;
   display: block;
-  object-fit: contain;
+  object-fit: fill;
 }
 .petCard > div:nth-child(2) {
   flex: 1;

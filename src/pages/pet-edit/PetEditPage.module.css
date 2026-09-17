@@ -25,7 +25,7 @@
   width: 96px;
   height: 96px;
   border-radius: 32px;
-  object-fit: contain;
+  object-fit: fill;
   padding: 28px;
   background: var(--color-brand-100);
 }
