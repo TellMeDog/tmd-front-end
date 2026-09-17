@@ -9,19 +9,25 @@ const STATUS_META = {
   unknown: { label: '정보 없음', tone: 'unknown' },
 };
 
-const PEEK_HEIGHT_PX = 96;
+const PEEK_HEIGHT_PX = 128;
 const HALF_RATIO = 0.5;
 const FULL_RATIO = 0.97;
 
-export default function PlaceListBottomSheet({ places, onSelectPlace }) {
-  const [heightState, setHeightState] = useState('peek');
+export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightStateChange }) {
+  const [heightState, setHeightState] = useState('half');
   const [dragHeight, setDragHeight] = useState(null);
   const sheetRef = useRef(null);
   const dragRef = useRef(null);
 
+  const updateHeightState = (next) => {
+    setHeightState(next);
+    onHeightStateChange?.(next);
+  };
+
   useEffect(() => {
-    setHeightState('peek');
+    updateHeightState('half');
     setDragHeight(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [places]);
 
   const handlePointerDown = (event) => {
@@ -53,9 +59,9 @@ export default function PlaceListBottomSheet({ places, onSelectPlace }) {
         const fullPx = containerHeight * FULL_RATIO;
         const midPeekHalf = (PEEK_HEIGHT_PX + halfPx) / 2;
         const midHalfFull = (halfPx + fullPx) / 2;
-        if (currentHeight >= midHalfFull) setHeightState('full');
-        else if (currentHeight >= midPeekHalf) setHeightState('half');
-        else setHeightState('peek');
+        if (currentHeight >= midHalfFull) updateHeightState('full');
+        else if (currentHeight >= midPeekHalf) updateHeightState('half');
+        else updateHeightState('peek');
       }
       return null;
     });
