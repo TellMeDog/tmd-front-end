@@ -1,3 +1,4 @@
+import { Geolocation } from '@capacitor/geolocation';
 import { useEffect, useState } from 'react';
 
 // 한국관광공사 서울센터(청계천로 40) — 위치 접근이 불가능하거나 거부된 경우 사용하는 기본 좌표
@@ -8,22 +9,26 @@ export function useCurrentLocation() {
   const [isFallback, setIsFallback] = useState(false);
 
   useEffect(() => {
-    if (!navigator.geolocation) {
-      setLocation(DEFAULT_LOCATION);
-      setIsFallback(true);
-      return;
-    }
+    let active = true;
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
+    Geolocation.getCurrentPosition({
+      enableHighAccuracy: true,
+      timeout: 8000,
+      maximumAge: 300000,
+    })
+      .then((position) => {
+        if (!active) return;
         setLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
-      },
-      () => {
+      })
+      .catch(() => {
+        if (!active) return;
         setLocation(DEFAULT_LOCATION);
         setIsFallback(true);
-      },
-      { enableHighAccuracy: true, timeout: 8000 },
-    );
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   return { location, isFallback };

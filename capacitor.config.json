@@ -1,0 +1,26 @@
+{
+  "appId": "com.tellmedog.app",
+  "appName": "알려줄개",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    },
+    "CapacitorCookies": {
+      "enabled": true
+    },
+    "SystemBars": {
+      "insetsHandling": "css",
+      "style": "LIGHT",
+      "hidden": false
+    },
+    "SplashScreen": {
+      "launchShowDuration": 400,
+      "backgroundColor": "#fff9f0",
+      "showSpinner": false
+    }
+  }
+}

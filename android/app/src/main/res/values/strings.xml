@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">알려줄개</string>
+    <string name="title_activity_main">알려줄개</string>
+    <string name="package_name">com.tellmedog.app</string>
+    <string name="custom_url_scheme">com.tellmedog.app</string>
+</resources>

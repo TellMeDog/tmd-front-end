@@ -5,6 +5,10 @@
   font-style: normal;
   font-display: swap;
 }
+:root {
+  --app-safe-area-top: var(--safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --app-safe-area-bottom: var(--safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
 html,
 body,
 #root {
@@ -138,7 +142,7 @@ input[type='number']::-webkit-outer-spin-button {
 @media (max-width: 767px) {
   .page {
     width: 100%;
-    padding: 32px 16px 96px;
+    padding: 32px 16px calc(96px + var(--app-safe-area-bottom));
   }
   .page-title {
     font-size: var(--font-28);

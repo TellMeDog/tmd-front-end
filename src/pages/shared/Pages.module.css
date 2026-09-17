@@ -245,7 +245,9 @@
     font-size: 24px;
   }
   .mapLayout {
-    height: calc(100vh - 128px);
+    height: calc(
+      100dvh - 128px - var(--app-safe-area-top) - var(--app-safe-area-bottom)
+    );
     padding: 12px;
   }
   .mapFull {

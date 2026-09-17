@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './app/App';
+import AppLaunchScreen from './components/app/AppLaunchScreen';
 import AuthBootstrap from './components/auth/AuthBootstrap';
 import './styles/reset.css';
 import './styles/tokens.css';
@@ -13,6 +14,7 @@ createRoot(document.getElementById('root')).render(
       <AuthBootstrap>
         <App />
       </AuthBootstrap>
+      <AppLaunchScreen />
     </BrowserRouter>
   </StrictMode>,
 );
