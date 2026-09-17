@@ -166,16 +166,15 @@ export default function KakaoMapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region, regionDetail]);
 
-  // 장소를 선택했거나 지역이 지정돼 있을 때만, 바텀시트/상단바 높이가 바뀌어도
-  // 그 대상이 가려지지 않도록 다시 맞춰줌. 선택된 장소도 지정된 지역도 없으면
-  // 사용자가 직접 옮기거나 확대/축소한 지도 위치를 건드리지 않음(현재 위치로
-  // 되돌리지 않음) — 그렇지 않으면 목록이 새로 갱신될 때마다 지도가 임의로
-  // 현재 위치로 튕겨서 드래그/줌 조작이 무력화되는 문제가 있었음
+  // 바텀시트 높이가 바뀌면(사용자가 직접 올리고 내릴 때) 선택된 장소나 지정된
+  // 지역, 없으면 현재 위치가 가려지지 않도록 다시 맞춰줌(바텀시트를 올리면 대상도
+  // 같이 위로, 내리면 보이는 영역의 40% 지점에 오도록). places 갱신마다 이 값이
+  // 불필요하게 바뀌던 문제(PlaceListBottomSheet 쪽)는 별도로 고쳐서, 이제는 드래그/
+  // 줌 도중에 places가 새로고침돼도 sheetHeightState가 실제로 바뀌지 않는 한
+  // 여기서 지도를 건드리지 않음
   useEffect(() => {
     if (!mapRef.current) return;
-    const target = selectedPlace ?? regionCenterRef.current;
-    if (!target) return;
-    centerWithOffset(target);
+    centerWithOffset(selectedPlace ?? regionCenterRef.current ?? userLocation);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlace?.id, sheetHeightState]);
 
