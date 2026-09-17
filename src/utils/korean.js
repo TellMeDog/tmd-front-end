@@ -13,6 +13,10 @@ export function withSubjectParticle(word) {
   return `${word}${hasBatchim(word) ? '이' : '가'}`;
 }
 
+export function withConjunctiveParticle(word) {
+  return `${word}${hasBatchim(word) ? '과' : '와'}`;
+}
+
 const INITIAL_CONSONANTS = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
 
 export function getKoreanInitials(value = '') {

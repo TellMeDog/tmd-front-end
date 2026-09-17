@@ -1,6 +1,6 @@
 import { ImagePlus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { getPresignedUrl, uploadToPresignedUrl } from '../../api/images.api';
+import { completeImageUpload, getPresignedUrl, uploadToPresignedUrl } from '../../api/images.api';
 import { createPets, updatePet } from '../../api/pets.api';
 import { getApiErrorMessage } from '../../api/client';
 import { getPetImageSrc, getPetSizeLabel } from '../../utils/pet';
@@ -68,10 +68,11 @@ export default function PetFormModal({ pet, onClose, onSaved }) {
       let imageKey = uploadedImageKey;
       if (imageFile && !imageKey) {
         setPendingStep('이미지 업로드 준비 중...');
-        const presignedData = await getPresignedUrl(imageFile);
+        const presignedData = await getPresignedUrl(imageFile, 'PET');
         setPendingStep('이미지 업로드 중...');
         await uploadToPresignedUrl(imageFile, presignedData);
-        imageKey = presignedData.imageKey;
+        const { imageUrl } = await completeImageUpload(presignedData.uploadId);
+        imageKey = imageUrl;
         setUploadedImageKey(imageKey);
       }
 

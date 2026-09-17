@@ -5,7 +5,29 @@
 }
 .heading {
   font-size: 16px;
+}
+.headingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
+}
+.writeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 15px;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  color: var(--color-brand-600);
+  font-size: 12px;
+  font-weight: 700;
+}
+.writeButton:hover {
+  border-color: var(--color-brand-500);
+  background: var(--color-brand-50);
 }
 .empty {
   color: var(--color-text-subtle);
