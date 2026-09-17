@@ -28,11 +28,16 @@ export default function PlaceListBottomSheet({ places, onSelectPlace, onHeightSt
     onHeightStateChange?.(next);
   };
 
+  // 마운트 시 한 번만 부모에 높이 상태를 동기화. 이후 지도를 옮겨서 places가
+  // 새로 갱신되더라도 사용자가 직접 조절한 높이(peek/half/full)를 그대로 유지함
   useEffect(() => {
     updateHeightState('half');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     setDragHeight(null);
     setFavoriteOverrides({});
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [places]);
 
   const isFavorite = (place) => favoriteOverrides[place.id] ?? place.favorite;

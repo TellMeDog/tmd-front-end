@@ -19,6 +19,12 @@
   flex-direction: column;
   align-items: flex-end;
   gap: 8px;
+  /* 검색/필터가 오른쪽으로 붙으면서 왼쪽에 남는 투명한 영역이 지도 스크롤/드래그를
+     가로채지 않도록 함(자식 요소에서만 다시 pointer-events를 켬) */
+  pointer-events: none;
+}
+.topBar > * {
+  pointer-events: auto;
 }
 .filterBar {
   padding-bottom: 4px;

@@ -144,8 +144,12 @@ export default function KakaoMapView({
     [onBoundsChange],
   );
 
+  // onCreate는 map 인스턴스 생성 시 한 번만 실행돼야 하는데, centerOnRegion 등
+  // 의존 함수가 sheetHeightState 변경 때마다 재생성되면서 라이브러리 쪽에서
+  // onCreate를 다시 호출하는 문제가 있어, mapRef로 최초 1회만 실행되도록 방지
   const handleCreate = useCallback(
     (map) => {
+      if (mapRef.current) return;
       mapRef.current = map;
       emitBounds(map);
       if (region && regionDetail) centerOnRegion(region, regionDetail);
@@ -162,14 +166,16 @@ export default function KakaoMapView({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [region, regionDetail]);
 
-  // 장소를 선택했을 때 그 위치로 이동. 선택된 장소가 없으면 상단바/바텀시트 높이가
-  // 바뀔 때 선택된 지역(없으면 현재 위치)이 가려지지 않도록 다시 맞춰줌.
-  // 닫을 때(선택 해제)는 지도를 그대로 둠.
-  // regionCenter는 ref로 최신값만 참조하고 의존성에는 넣지 않음 — 카테고리 선택 등으로
-  // 지역 모드가 풀릴 때 그 자체로 지도가 현재 위치로 튕기지 않도록 하기 위함
+  // 장소를 선택했거나 지역이 지정돼 있을 때만, 바텀시트/상단바 높이가 바뀌어도
+  // 그 대상이 가려지지 않도록 다시 맞춰줌. 선택된 장소도 지정된 지역도 없으면
+  // 사용자가 직접 옮기거나 확대/축소한 지도 위치를 건드리지 않음(현재 위치로
+  // 되돌리지 않음) — 그렇지 않으면 목록이 새로 갱신될 때마다 지도가 임의로
+  // 현재 위치로 튕겨서 드래그/줌 조작이 무력화되는 문제가 있었음
   useEffect(() => {
     if (!mapRef.current) return;
-    centerWithOffset(selectedPlace ?? regionCenterRef.current ?? userLocation);
+    const target = selectedPlace ?? regionCenterRef.current;
+    if (!target) return;
+    centerWithOffset(target);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedPlace?.id, sheetHeightState]);
 
