@@ -1,7 +1,10 @@
 import { Heart, MapPin, Navigation, PawPrint, X } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { getApiErrorMessage } from '../../api/client';
+import { addFavorite, deleteFavorite } from '../../api/favorites.api';
 import { getPlaceDetail } from '../../api/places.api';
+import { useAuthStore } from '../../stores/auth.store';
 import ReviewSection from '../../components/review/ReviewSection';
 import { useDraggableSheet } from './useDraggableSheet';
 import styles from './PlaceBottomSheet.module.css';
@@ -25,28 +28,64 @@ const POLICY_FIELDS = [
   ['etcAcmpyInfo', '기타 안내'],
 ];
 
-export default function PlaceBottomSheet({ place, onClose }) {
+export default function PlaceBottomSheet({ place, onClose, onHeightStateChange }) {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const accessToken = useAuthStore((state) => state.accessToken);
   const [detail, setDetail] = useState(null);
-  const { sheetRef, expanded, dragHeight, reset, dragHandlers } = useDraggableSheet(onClose);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isFavoritePending, setIsFavoritePending] = useState(false);
+  const [favoriteError, setFavoriteError] = useState('');
+  const { sheetRef, expanded, dragHeight, reset, dragHandlers } = useDraggableSheet(onClose, (isExpanded) =>
+    onHeightStateChange?.(isExpanded ? 'full' : 'half'),
+  );
 
   const fetchDetail = useCallback(() => {
     if (!place) return;
     getPlaceDetail(place.id, { mapX: place.lng, mapY: place.lat })
-      .then(({ data }) => setDetail(data))
+      .then(({ data }) => {
+        setDetail(data);
+        setIsFavorite(data?.placeMarkerResponse?.favorite ?? false);
+      })
       .catch(() => setDetail(null));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [place?.id, place?.lat, place?.lng]);
 
   useEffect(() => {
     setDetail(null);
+    setFavoriteError('');
+    setIsFavorite(place?.favorite ?? false);
     fetchDetail();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [place?.id, place?.lat, place?.lng]);
 
   useEffect(() => {
+    if (!place) return;
     reset();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [place?.id]);
+
+  const handleToggleFavorite = async () => {
+    if (!place) return;
+    if (!accessToken) {
+      navigate('/login', { state: { from: location.pathname } });
+      return;
+    }
+
+    const nextFavorite = !isFavorite;
+    setFavoriteError('');
+    setIsFavoritePending(true);
+    setIsFavorite(nextFavorite);
+    try {
+      if (nextFavorite) await addFavorite(place.id);
+      else await deleteFavorite(place.id);
+    } catch (requestError) {
+      setIsFavorite(!nextFavorite);
+      setFavoriteError(getApiErrorMessage(requestError, '즐겨찾기를 변경하지 못했습니다.'));
+    } finally {
+      setIsFavoritePending(false);
+    }
+  };
 
   if (!place) return null;
   const status = STATUS_META[place.status] ?? STATUS_META.unknown;
@@ -55,7 +94,6 @@ export default function PlaceBottomSheet({ place, onClose }) {
     ([, value]) => value,
   );
   const visitStats = detail?.visitStats;
-  const isFavorite = detail?.placeMarkerResponse?.favorite ?? place.favorite;
 
   return (
     <section
@@ -116,13 +154,17 @@ export default function PlaceBottomSheet({ place, onClose }) {
           onReviewCreated={fetchDetail}
         />
 
+        {favoriteError && <p className="field-error">{favoriteError}</p>}
+
         <div className={styles.actions}>
           <button
             type="button"
             className={`button button--secondary ${styles.saveButton} ${isFavorite ? styles.saved : ''}`}
+            onClick={handleToggleFavorite}
+            disabled={isFavoritePending}
           >
             <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
-            즐겨찾기
+            {isFavorite ? '저장됨' : '즐겨찾기'}
           </button>
           <Link className="button button--primary" to={`/places/${place.id}`}>
             <Navigation size={18} />

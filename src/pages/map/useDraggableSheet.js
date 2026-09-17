@@ -6,14 +6,19 @@ const FULL_RATIO = 0.97;
 const DISMISS_RATIO = 0.3;
 
 // 모바일 바텀시트를 드래그로 절반/전체로 스냅하거나, 충분히 내리면 닫히게 함
-export function useDraggableSheet(onClose) {
+export function useDraggableSheet(onClose, onExpandedChange) {
   const [expanded, setExpanded] = useState(false);
   const [dragHeight, setDragHeight] = useState(null);
   const sheetRef = useRef(null);
   const dragRef = useRef(null);
 
+  const updateExpanded = (value) => {
+    setExpanded(value);
+    onExpandedChange?.(value);
+  };
+
   const reset = () => {
-    setExpanded(false);
+    updateExpanded(false);
     setDragHeight(null);
   };
 
@@ -46,7 +51,7 @@ export function useDraggableSheet(onClose) {
           onClose();
         } else {
           const midpoint = (containerHeight * (HALF_RATIO + FULL_RATIO)) / 2;
-          setExpanded(currentHeight >= midpoint);
+          updateExpanded(currentHeight >= midpoint);
         }
       }
       return null;
