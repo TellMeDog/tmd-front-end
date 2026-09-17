@@ -1,72 +1,61 @@
 import { Heart, MapPin, Navigation, PawPrint, X } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getPlaceReviews } from '../../api/reviews.api';
+import { getPlaceDetail } from '../../api/places.api';
 import ReviewSection from '../../components/review/ReviewSection';
+import { useDraggableSheet } from './useDraggableSheet';
 import styles from './PlaceBottomSheet.module.css';
 
 const STATUS_META = {
   available: { label: '입장 가능', tone: 'available' },
   conditional: { label: '조건부 가능', tone: 'conditional' },
   verify: { label: '확인 필요', tone: 'verify' },
+  unknown: { label: '정보 없음', tone: 'unknown' },
 };
 
-const MOBILE_BREAKPOINT = 767;
-const HALF_RATIO = 0.5;
-const FULL_RATIO = 0.97;
+const POLICY_FIELDS = [
+  ['acmpyTypeCd', '동반 유형'],
+  ['acmpyPsblCpam', '동반 가능 동물'],
+  ['acmpyNeedMtr', '동반 시 필요사항'],
+  ['relaAcdntRiskMtr', '안전사고 위험요소'],
+  ['relaPosesFclty', '보유 시설'],
+  ['relaFrnshPrdlst', '비치 제품'],
+  ['relaPurcPrdlst', '구매 가능 품목'],
+  ['relaRntlPrdlst', '대여 가능 품목'],
+  ['etcAcmpyInfo', '기타 안내'],
+];
 
 export default function PlaceBottomSheet({ place, onClose }) {
-  const [reviews, setReviews] = useState([]);
-  const [expanded, setExpanded] = useState(false);
-  const [dragHeight, setDragHeight] = useState(null);
-  const sheetRef = useRef(null);
-  const dragRef = useRef(null);
+  const [detail, setDetail] = useState(null);
+  const { sheetRef, expanded, dragHeight, reset, dragHandlers } = useDraggableSheet(onClose);
 
-  useEffect(() => {
+  const fetchDetail = useCallback(() => {
     if (!place) return;
-    getPlaceReviews(place.id).then(({ data }) => setReviews(data));
-  }, [place]);
+    getPlaceDetail(place.id, { mapX: place.lng, mapY: place.lat })
+      .then(({ data }) => setDetail(data))
+      .catch(() => setDetail(null));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [place?.id, place?.lat, place?.lng]);
 
   useEffect(() => {
-    setExpanded(false);
-    setDragHeight(null);
+    setDetail(null);
+    fetchDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [place?.id, place?.lat, place?.lng]);
+
+  useEffect(() => {
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [place?.id]);
 
-  const handlePointerDown = (event) => {
-    const containerHeight = sheetRef.current?.parentElement?.clientHeight;
-    if (!sheetRef.current || !containerHeight || window.innerWidth > MOBILE_BREAKPOINT) return;
-    dragRef.current = {
-      startY: event.clientY,
-      startHeight: sheetRef.current.getBoundingClientRect().height,
-      containerHeight,
-    };
-    event.currentTarget.setPointerCapture(event.pointerId);
-  };
-
-  const handlePointerMove = (event) => {
-    if (!dragRef.current) return;
-    const { startY, startHeight, containerHeight } = dragRef.current;
-    const minHeight = containerHeight * HALF_RATIO;
-    const maxHeight = containerHeight * FULL_RATIO;
-    const nextHeight = Math.min(maxHeight, Math.max(minHeight, startHeight + (startY - event.clientY)));
-    setDragHeight(nextHeight);
-  };
-
-  const handlePointerUp = () => {
-    if (!dragRef.current) return;
-    const { containerHeight } = dragRef.current;
-    dragRef.current = null;
-    setDragHeight((currentHeight) => {
-      if (currentHeight != null) {
-        const midpoint = (containerHeight * (HALF_RATIO + FULL_RATIO)) / 2;
-        setExpanded(currentHeight >= midpoint);
-      }
-      return null;
-    });
-  };
-
   if (!place) return null;
-  const status = STATUS_META[place.status] ?? STATUS_META.conditional;
+  const status = STATUS_META[place.status] ?? STATUS_META.unknown;
+  const address = [detail?.addr1, detail?.addr2].filter(Boolean).join(' ');
+  const policyRows = POLICY_FIELDS.map(([key, label]) => [label, detail?.petPolicyInfo?.[key]]).filter(
+    ([, value]) => value,
+  );
+  const visitStats = detail?.visitStats;
+  const isFavorite = detail?.placeMarkerResponse?.favorite ?? place.favorite;
 
   return (
     <section
@@ -76,13 +65,7 @@ export default function PlaceBottomSheet({ place, onClose }) {
       role="dialog"
       aria-label={`${place.name} 상세 정보`}
     >
-      <div
-        className={styles.header}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
-      >
+      <div className={styles.header} {...dragHandlers}>
         <span className={styles.handle} />
         <button type="button" className={styles.close} onClick={onClose} aria-label="닫기">
           <X size={20} />
@@ -90,34 +73,55 @@ export default function PlaceBottomSheet({ place, onClose }) {
       </div>
 
       <div className={styles.photo} data-tone={status.tone}>
-        <MapPin size={40} />
+        {place.image ? <img src={place.image} alt="" /> : <MapPin size={40} />}
       </div>
 
       <div className={styles.body}>
         <div className={styles.meta}>
-          {place.category} · {place.area} · {place.distanceLabel ?? place.distance}
+          {[place.category, place.distanceLabel, place.rating > 0 ? `★ ${place.rating.toFixed(1)}` : null]
+            .filter(Boolean)
+            .join(' · ')}
         </div>
         <h2>{place.name}</h2>
         <span className={`${styles.badge} ${styles[status.tone]}`}>{status.label}</span>
 
-        <p className={styles.desc}>{place.reason}</p>
+        {address && <p className={styles.address}>{address}</p>}
 
-        <div className={styles.policy}>
-          <b>
-            <PawPrint size={16} />
-            반려동반 정책
-          </b>
-          <p>{place.reason}</p>
-        </div>
+        {visitStats && (visitStats.enteredCount || visitStats.mismatchedCount || visitStats.deniedCount) && (
+          <p className={styles.visitStats}>
+            입장 성공 {visitStats.enteredCount} · 조건과 다름 {visitStats.mismatchedCount} · 거부{' '}
+            {visitStats.deniedCount}
+          </p>
+        )}
 
-        <ReviewSection reviews={reviews} />
+        {policyRows.length > 0 && (
+          <div className={styles.policy}>
+            <b>
+              <PawPrint size={16} />
+              반려동반 정책
+            </b>
+            {policyRows.map(([label, value]) => (
+              <p key={label}>
+                <strong>{label}</strong>
+                {value}
+              </p>
+            ))}
+          </div>
+        )}
+
+        <ReviewSection
+          reviews={detail?.reviews?.content ?? []}
+          topBreeds={visitStats?.topBreeds}
+          placeId={place.id}
+          onReviewCreated={fetchDetail}
+        />
 
         <div className={styles.actions}>
           <button
             type="button"
-            className={`button button--secondary ${styles.saveButton} ${place.saved ? styles.saved : ''}`}
+            className={`button button--secondary ${styles.saveButton} ${isFavorite ? styles.saved : ''}`}
           >
-            <Heart size={18} fill={place.saved ? 'currentColor' : 'none'} />
+            <Heart size={18} fill={isFavorite ? 'currentColor' : 'none'} />
             즐겨찾기
           </button>
           <Link className="button button--primary" to={`/places/${place.id}`}>
