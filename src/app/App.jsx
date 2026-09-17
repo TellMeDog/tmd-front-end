@@ -21,9 +21,9 @@ export default function App() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<HomePage />} />
+        <Route path="map" element={<MapPage />} />
         <Route path="places/:placeId" element={<PlaceDetailPage />} />
         <Route element={<ProtectedRoute />}>
-          <Route path="map" element={<MapPage />} />
           <Route path="places/:placeId/prep" element={<VisitPrepPage />} />
           <Route path="places/:placeId/report" element={<VisitReportPage />} />
           <Route path="favorites" element={<FavoritesPage />} />
