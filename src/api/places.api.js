@@ -77,6 +77,17 @@ export const getPlaceDetail = async (
   return { success: true, data };
 };
 
+// 메인 화면 미니 지도/추천 목록에 쓰는, 현재 좌표 6km 이내 10곳 조회
+export const getHomePlaces = async ({ origin, petId = getRepresentativePetId() } = {}) => {
+  if (!origin) return { success: true, data: [] };
+
+  const query = new URLSearchParams({ currMapX: origin.lng, currMapY: origin.lat });
+  if (petId) query.set('petId', petId);
+
+  const markers = await apiRequest(`/places/init?${query}`);
+  return { success: true, data: markers.map((marker) => toPlace(marker, null)) };
+};
+
 export const searchPlacesByKeyword = async (
   keyword,
   { petId = getRepresentativePetId(), origin } = {},

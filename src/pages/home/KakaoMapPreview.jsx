@@ -10,6 +10,7 @@ const STATUS_PIN_CLASS = {
   available: 'pinAvailable',
   conditional: 'pinConditional',
   verify: 'pinVerify',
+  unknown: 'pinUnknown',
 };
 
 export default function KakaoMapPreview({ apiKey, places = [], onBoundsChange }) {
