@@ -182,6 +182,90 @@
   color: var(--color-text-subtle);
   font-size: var(--font-12);
 }
+.agreements {
+  padding: 14px 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-12);
+  background: var(--color-bg);
+}
+.agreementAll,
+.agreementRow label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+.agreementAll {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border);
+  font-size: var(--font-16);
+}
+.agreementAll input,
+.agreementRow input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.agreementCheckbox {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  background: var(--color-white);
+  color: var(--color-white);
+  box-shadow: inset 0 0 0 1px var(--color-border);
+  display: grid;
+  place-items: center;
+}
+.agreementAll input:checked + .agreementCheckbox,
+.agreementRow input:checked + .agreementCheckbox {
+  background: var(--color-brand-500);
+  box-shadow: none;
+}
+.agreementList {
+  margin-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+.agreementRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.agreementRow label {
+  min-width: 0;
+  font-size: var(--font-12);
+  color: var(--color-text-subtle);
+}
+.agreementToggle {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  color: var(--color-text-subtle);
+  font-size: var(--font-12);
+  font-weight: 700;
+}
+.agreementText {
+  margin-top: 8px;
+  padding: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+  border-radius: var(--radius-8);
+  background: var(--color-white);
+  color: var(--color-text-subtle);
+  font-family: inherit;
+  font-size: var(--font-12);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
 .switch {
   margin-top: 24px;
   text-align: center;

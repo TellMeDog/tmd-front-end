@@ -1,14 +1,20 @@
-import { Check, Eye, EyeOff } from 'lucide-react';
+import { Check, ChevronDown, Eye, EyeOff } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import BrandLogo from '../../components/icons/BrandLogo';
 import { sendVerificationCode, signup, verifyEmail } from '../../api/auth.api';
 import { getApiErrorMessage } from '../../api/client';
 import FeedbackModal from '../../components/feedback/FeedbackModal';
+import { PRIVACY_CONSENT_TEXT, TERMS_OF_SERVICE_TEXT } from '../../constants/legalTerms';
 import styles from '../shared/Auth.module.css';
 
 const initialForm = { email: '', nickname: '', password: '', confirmPassword: '' };
 const VERIFICATION_DURATION_SECONDS = 5 * 60;
+const AGREEMENT_ITEMS = [
+  { key: 'terms', label: '[필수] 이용약관 동의', text: TERMS_OF_SERVICE_TEXT },
+  { key: 'privacy', label: '[필수] 개인정보 수집 및 이용 동의', text: PRIVACY_CONSENT_TEXT },
+];
+const initialAgreements = { terms: false, privacy: false };
 
 function formatRemainingTime(seconds) {
   const minutes = Math.floor(seconds / 60);
@@ -28,7 +34,23 @@ export default function SignupPage() {
   const [notice, setNotice] = useState(null);
   const [verificationExpiresAt, setVerificationExpiresAt] = useState(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
+  const [agreements, setAgreements] = useState(initialAgreements);
+  const [openAgreementKey, setOpenAgreementKey] = useState(null);
   const isCodeExpired = verificationSent && !emailVerified && remainingSeconds === 0;
+  const allAgreed = AGREEMENT_ITEMS.every((item) => agreements[item.key]);
+
+  const toggleAgreement = (key) => {
+    setAgreements((prev) => ({ ...prev, [key]: !prev[key] }));
+    setError('');
+  };
+
+  const toggleAllAgreements = () => {
+    const nextValue = !allAgreed;
+    setAgreements(
+      Object.fromEntries(AGREEMENT_ITEMS.map((item) => [item.key, nextValue])),
+    );
+    setError('');
+  };
 
   useEffect(() => {
     if (!verificationExpiresAt || emailVerified) return undefined;
@@ -109,6 +131,7 @@ export default function SignupPage() {
     if (Object.values(form).some((value) => !value)) return setError('모든 항목을 입력해 주세요.');
     if (!emailVerified) return setError('이메일 인증을 완료해 주세요.');
     if (form.password !== form.confirmPassword) return setError('비밀번호가 일치하지 않아요.');
+    if (!allAgreed) return setError('이용약관과 개인정보 수집·이용에 동의해 주세요.');
     setPendingAction('signup');
     try {
       await signup(form);
@@ -266,11 +289,55 @@ export default function SignupPage() {
                 placeholder="비밀번호를 다시 입력해 주세요"
               />
             </div>
+            <div className={styles.agreements}>
+              <label className={styles.agreementAll}>
+                <input type="checkbox" checked={allAgreed} onChange={toggleAllAgreements} />
+                <span className={styles.agreementCheckbox} aria-hidden="true">
+                  {allAgreed && <Check size={14} strokeWidth={3} />}
+                </span>
+                <b>약관 전체 동의</b>
+              </label>
+              <ul className={styles.agreementList}>
+                {AGREEMENT_ITEMS.map((item) => {
+                  const isOpen = openAgreementKey === item.key;
+                  return (
+                    <li key={item.key}>
+                      <div className={styles.agreementRow}>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={agreements[item.key]}
+                            onChange={() => toggleAgreement(item.key)}
+                          />
+                          <span className={styles.agreementCheckbox} aria-hidden="true">
+                            {agreements[item.key] && <Check size={12} strokeWidth={3} />}
+                          </span>
+                          <span>{item.label}</span>
+                        </label>
+                        <button
+                          type="button"
+                          className={styles.agreementToggle}
+                          aria-expanded={isOpen}
+                          onClick={() => setOpenAgreementKey(isOpen ? null : item.key)}
+                        >
+                          보기
+                          <ChevronDown
+                            size={16}
+                            style={{ transform: isOpen ? 'rotate(180deg)' : undefined }}
+                          />
+                        </button>
+                      </div>
+                      {isOpen && <pre className={styles.agreementText}>{item.text}</pre>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
             {error && <p className="field-error">{error}</p>}
             <button
               className="button button--primary"
               type="submit"
-              disabled={pendingAction !== ''}
+              disabled={pendingAction !== '' || !allAgreed}
             >
               {pendingAction === 'signup' ? '가입 중...' : '가입하기'}
             </button>
