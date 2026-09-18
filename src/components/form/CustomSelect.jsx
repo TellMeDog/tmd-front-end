@@ -69,7 +69,11 @@ export default function CustomSelect({
 
     const updateMenuRect = () => {
       const rect = rootRef.current?.getBoundingClientRect();
-      if (rect) setMenuRect({ ...rect.toJSON(), viewportHeight: window.visualViewport?.height ?? window.innerHeight });
+      if (rect)
+        setMenuRect({
+          ...rect.toJSON(),
+          viewportHeight: window.visualViewport?.height ?? window.innerHeight,
+        });
     };
 
     updateMenuRect();
@@ -193,17 +197,26 @@ export default function CustomSelect({
             className={styles.options}
             role="listbox"
             style={{
-              position: 'fixed',
-              left: menuRect.left,
-              width: menuRect.width,
-              ...(placement === 'top'
+              ...(placement === 'inline'
                 ? {
-                    bottom: menuRect.viewportHeight - menuRect.top + 8,
-                    maxHeight: Math.min(240, menuRect.top - 8),
+                    position: 'static',
+                    width: '100%',
+                    marginTop: 8,
+                    maxHeight: 240,
                   }
                 : {
-                    top: menuRect.bottom + 8,
-                    maxHeight: Math.min(240, menuRect.viewportHeight - menuRect.bottom - 8),
+                    position: 'fixed',
+                    left: menuRect.left,
+                    width: menuRect.width,
+                    ...(placement === 'top'
+                      ? {
+                          bottom: menuRect.viewportHeight - menuRect.top + 8,
+                          maxHeight: Math.min(240, menuRect.top - 8),
+                        }
+                      : {
+                          top: menuRect.bottom + 8,
+                          maxHeight: Math.min(240, menuRect.viewportHeight - menuRect.bottom - 8),
+                        }),
                   }),
             }}
           >
@@ -236,7 +249,7 @@ export default function CustomSelect({
               <li className={styles.empty}>{emptyMessage}</li>
             )}
           </ul>,
-          document.body,
+          placement === 'inline' ? rootRef.current : document.body,
         )}
     </div>
   );

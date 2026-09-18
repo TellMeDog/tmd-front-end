@@ -1,7 +1,6 @@
 import { Heart } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import FavoriteCard from '../../components/favorite/FavoriteCard';
-import CustomSelect from '../../components/form/CustomSelect';
 import { deleteFavorite, getFavorites } from '../../api/favorites.api';
 import { getApiErrorMessage } from '../../api/client';
 import { getPets } from '../../api/pets.api';
@@ -11,7 +10,6 @@ export default function FavoritesPage() {
   const pets = usePetStore((state) => state.pets);
   const selectedPetId = usePetStore((state) => state.selectedPetId);
   const setPets = usePetStore((state) => state.setPets);
-  const setSelectedPetId = usePetStore((state) => state.setSelectedPetId);
   const [favorites, setFavorites] = useState([]);
   const [isPetLoading, setIsPetLoading] = useState(pets.length === 0);
   const [page, setPage] = useState(0);
@@ -73,20 +71,6 @@ export default function FavoritesPage() {
       <span className="eyebrow">SAVED PLACES</span>
       <h1 className="page-title">즐겨찾기</h1>
       <p className="page-description">반려견과 가고 싶은 장소를 모아두었어요.</p>
-      {/* {pets.length > 1 && (
-        <div className={styles.petSelector}>
-          <span>반려동물</span>
-          <CustomSelect
-            value={selectedPetId}
-            options={pets.map((pet) => ({ value: pet.petId, label: pet.name }))}
-            ariaLabel="즐겨찾기를 확인할 반려동물"
-            onChange={(nextPetId) => {
-              setPage(0);
-              setSelectedPetId(nextPetId);
-            }}
-          />
-        </div>
-      )*/}
       {!isPetLoading && !isLoading && pets.length === 0 && (
         <section className={`card empty-state ${styles.favoriteEmpty}`}>
           <Heart size={40} />

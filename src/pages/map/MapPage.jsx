@@ -5,6 +5,7 @@ import { getNearbyPlaces, getPlacesByRegion, searchPlacesByKeyword } from '../..
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import RegionSelectBox from '../../components/place/RegionSelectBox';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
+import { useAuthStore } from '../../stores/auth.store';
 import { usePetStore } from '../../stores/pet.store';
 import { expandBounds, isBoundsContained } from '../../utils/geo';
 import pageStyles from '../shared/Pages.module.css';
@@ -19,7 +20,9 @@ const BOUNDS_DEBOUNCE_MS = 1000;
 
 export default function MapPage() {
   const { location } = useCurrentLocation();
+  const accessToken = useAuthStore((state) => state.accessToken);
   const petId = usePetStore((state) => state.selectedPetId);
+  const petsLoaded = usePetStore((state) => state.petsLoaded);
   const [searchParams, setSearchParams] = useSearchParams();
   const category = searchParams.get('category');
   const keyword = searchParams.get('keyword');
@@ -41,7 +44,9 @@ export default function MapPage() {
   const [hasFetched, setHasFetched] = useState(false);
   const [keywordInput, setKeywordInput] = useState(keyword ?? '');
   const [sheetHeightState, setSheetHeightState] = useState(null);
+  const [retryKey, setRetryKey] = useState(0);
   const boundsDebounceRef = useRef(null);
+  const canFetchPlaces = Boolean(location) && (!accessToken || petsLoaded);
 
   useEffect(() => {
     setKeywordInput(keyword ?? '');
@@ -97,64 +102,93 @@ export default function MapPage() {
   useEffect(() => () => clearTimeout(boundsDebounceRef.current), []);
 
   useEffect(() => {
-    if (!keyword || !location) return;
+    if (!keyword || !canFetchPlaces) return undefined;
+    let active = true;
     setFetchedRegion(null);
     setFetchError(false);
     setHasFetched(false);
     searchPlacesByKeyword(keyword, { petId, origin: location })
       .then(({ data }) => {
+        if (!active) return;
         setNearbyPlaces(data);
         setHasFetched(true);
       })
       .catch(() => {
+        if (!active) return;
         setNearbyPlaces([]);
         setFetchError(true);
         setHasFetched(true);
       });
-  }, [keyword, petId, location]);
+    return () => {
+      active = false;
+    };
+  }, [keyword, petId, location, canFetchPlaces, retryKey]);
 
   useEffect(() => {
-    if (!region || !regionDetail || !location) return;
+    if (!region || !regionDetail || !canFetchPlaces) return undefined;
+    let active = true;
     setFetchedRegion(null);
     setFetchError(false);
     setHasFetched(false);
     getPlacesByRegion(region, regionDetail, { petId, origin: location })
       .then(({ data }) => {
+        if (!active) return;
         setNearbyPlaces(data);
         setHasFetched(true);
       })
       .catch(() => {
+        if (!active) return;
         setNearbyPlaces([]);
         setFetchError(true);
         setHasFetched(true);
       });
-  }, [region, regionDetail, petId, location]);
+    return () => {
+      active = false;
+    };
+  }, [region, regionDetail, petId, location, canFetchPlaces, retryKey]);
 
   useEffect(() => {
-    if (keyword || (region && regionDetail) || !bounds || !location) return;
+    if (keyword || (region && regionDetail) || !bounds || !canFetchPlaces) return undefined;
 
     const isCached =
       fetchedRegion &&
       fetchedRegion.category === category &&
       fetchedRegion.petId === petId &&
       isBoundsContained(bounds, fetchedRegion.bounds);
-    if (isCached) return;
+    if (isCached) return undefined;
 
+    let active = true;
     const searchBounds = expandBounds(bounds);
     setFetchError(false);
     setHasFetched(false);
     getNearbyPlaces(searchBounds, { origin: location, category, petId })
       .then(({ data }) => {
+        if (!active) return;
         setNearbyPlaces(data);
         setFetchedRegion({ bounds: searchBounds, category, petId });
         setHasFetched(true);
       })
       .catch(() => {
+        if (!active) return;
         setNearbyPlaces([]);
         setFetchError(true);
         setHasFetched(true);
       });
-  }, [bounds, location, category, keyword, region, regionDetail, petId, fetchedRegion]);
+    return () => {
+      active = false;
+    };
+  }, [
+    bounds,
+    location,
+    category,
+    keyword,
+    region,
+    regionDetail,
+    petId,
+    fetchedRegion,
+    canFetchPlaces,
+    retryKey,
+  ]);
 
   useEffect(() => {
     setListClosed(false);
@@ -172,7 +206,10 @@ export default function MapPage() {
 
   return (
     <main className={pageStyles.mapLayout}>
-      <section className={`${pageStyles.mapFull} ${styles.mapWrap}`} data-sheet={sheetHeightState ?? 'none'}>
+      <section
+        className={`${pageStyles.mapFull} ${styles.mapWrap}`}
+        data-sheet={sheetHeightState ?? 'none'}
+      >
         {KAKAO_MAP_KEY && location ? (
           <KakaoMapView
             apiKey={KAKAO_MAP_KEY}
@@ -188,7 +225,9 @@ export default function MapPage() {
           />
         ) : (
           <span className={pageStyles.mapPlaceholder}>
-            {location ? '카카오맵 API 키를 설정하면 지도가 표시돼요' : '현재 위치를 확인하는 중이에요'}
+            {location
+              ? '카카오맵 API 키를 설정하면 지도가 표시돼요'
+              : '현재 위치를 확인하는 중이에요'}
           </span>
         )}
 
@@ -222,7 +261,16 @@ export default function MapPage() {
           />
 
           {fetchError && !selectedPlace && (
-            <span className={styles.errorBanner}>장소를 불러오지 못했어요. 잠시 후 다시 시도해 주세요.</span>
+            <button
+              type="button"
+              className={styles.errorBanner}
+              onClick={() => {
+                setFetchedRegion(null);
+                setRetryKey((current) => current + 1);
+              }}
+            >
+              장소를 불러오지 못했어요. 다시 시도
+            </button>
           )}
 
           {!fetchError && hasFetched && nearbyPlaces.length === 0 && !selectedPlace && (

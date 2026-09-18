@@ -19,7 +19,7 @@ export default function BreedCombobox({ value, onChange, disabled }) {
       ariaLabel="견종"
       placeholder="견종을 선택해 주세요"
       searchPlaceholder="견종 또는 초성을 입력해 주세요"
-      placement="top"
+      placement="inline"
       searchable
       disabled={disabled}
     />

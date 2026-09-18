@@ -5,6 +5,7 @@ import { getHomePlaces } from '../../api/places.api';
 import PlaceCard from '../../components/place/PlaceCard';
 import PlaceFilterBar from '../../components/place/PlaceFilterBar';
 import RegionSelectBox from '../../components/place/RegionSelectBox';
+import { useAuthStore } from '../../stores/auth.store';
 import { usePetStore } from '../../stores/pet.store';
 import { useCurrentLocation } from '../../hooks/useCurrentLocation';
 import { withConjunctiveParticle } from '../../utils/korean';
@@ -15,8 +16,10 @@ const KAKAO_MAP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY;
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const accessToken = useAuthStore((state) => state.accessToken);
   const pets = usePetStore((state) => state.pets);
   const petId = usePetStore((state) => state.selectedPetId);
+  const petsLoaded = usePetStore((state) => state.petsLoaded);
   const petName = pets.find((pet) => pet.petId === petId)?.name ?? '멍이';
   const { location } = useCurrentLocation();
   const [homePlaces, setHomePlaces] = useState([]);
@@ -32,7 +35,10 @@ export default function HomePage() {
     setRegionName(nextRegionName);
     setRegionDetailName(nextRegionDetailName);
     if (!nextRegionName || !nextRegionDetailName) return;
-    const query = new URLSearchParams({ region: nextRegionName, regionDetail: nextRegionDetailName });
+    const query = new URLSearchParams({
+      region: nextRegionName,
+      regionDetail: nextRegionDetailName,
+    });
     navigate(`/map?${query}`);
   };
 
@@ -44,11 +50,23 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if (!location) return;
-    getHomePlaces({ origin: location, petId }).then(({ data }) => {
-      setHomePlaces(data);
-    });
-  }, [location, petId]);
+    // 로그인 사용자는 반려동물 조회가 끝난 뒤에만 장소를 요청합니다. 앱 시작 직후
+    // petId 없는 응답(회색 마커)이 petId 있는 최신 응답을 덮는 경쟁 상태를 방지합니다.
+    if (!location || (accessToken && !petsLoaded)) return undefined;
+
+    let active = true;
+    getHomePlaces({ origin: location, petId })
+      .then(({ data }) => {
+        if (active) setHomePlaces(data);
+      })
+      .catch(() => {
+        if (active) setHomePlaces([]);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [accessToken, location, petId, petsLoaded]);
 
   return (
     <main className="page">
@@ -84,7 +102,7 @@ export default function HomePage() {
       <section>
         <Link to="/map" className={styles.mapPreview}>
           {KAKAO_MAP_KEY ? (
-            <KakaoMapPreview apiKey={KAKAO_MAP_KEY} places={homePlaces} />
+            <KakaoMapPreview apiKey={KAKAO_MAP_KEY} location={location} places={homePlaces} />
           ) : (
             <span className={styles.mapPlaceholder}>지도 준비중</span>
           )}

@@ -82,8 +82,10 @@
   box-shadow: var(--shadow-sm);
 }
 .errorBanner {
+  border: 0;
   background: #fff0e6;
   color: #b95b21;
+  cursor: pointer;
 }
 .emptyBanner {
   background: #fff;

@@ -25,7 +25,9 @@ export const toPlace = (marker, category) => {
     category,
     status: MARKER_COLOR_STATUS[marker.markerColor] ?? 'unknown',
     name: marker.title,
-    image: marker.firstImage || '',
+    // Capacitor 앱은 https://localhost에서 실행되므로 HTTP 이미지는 WebView에서
+    // 혼합 콘텐츠로 차단됩니다. HTTPS로 정규화해 앱에서도 장소 이미지를 표시합니다.
+    image: marker.firstImage?.replace(/^http:\/\//i, 'https://') || '',
     rating: marker.averageRating,
     favorite: marker.favorite,
     distanceKm,
