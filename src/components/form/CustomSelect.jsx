@@ -69,15 +69,22 @@ export default function CustomSelect({
 
     const updateMenuRect = () => {
       const rect = rootRef.current?.getBoundingClientRect();
-      if (rect) setMenuRect(rect);
+      if (rect) setMenuRect({ ...rect.toJSON(), viewportHeight: window.visualViewport?.height ?? window.innerHeight });
     };
 
     updateMenuRect();
     window.addEventListener('scroll', updateMenuRect, true);
     window.addEventListener('resize', updateMenuRect);
+    // 모바일에서 키보드가 올라오면 window 크기는 그대로인 채 visualViewport만
+    // 줄어들거나(레이아웃이 pan되며) 밀려나므로, 이 이벤트도 같이 들어야 목록이
+    // 키보드에 가리거나 화면 밖으로 나가지 않고 트리거 위치를 따라감
+    window.visualViewport?.addEventListener('resize', updateMenuRect);
+    window.visualViewport?.addEventListener('scroll', updateMenuRect);
     return () => {
       window.removeEventListener('scroll', updateMenuRect, true);
       window.removeEventListener('resize', updateMenuRect);
+      window.visualViewport?.removeEventListener('resize', updateMenuRect);
+      window.visualViewport?.removeEventListener('scroll', updateMenuRect);
     };
   }, [open]);
 
@@ -190,8 +197,14 @@ export default function CustomSelect({
               left: menuRect.left,
               width: menuRect.width,
               ...(placement === 'top'
-                ? { bottom: window.innerHeight - menuRect.top + 8 }
-                : { top: menuRect.bottom + 8 }),
+                ? {
+                    bottom: menuRect.viewportHeight - menuRect.top + 8,
+                    maxHeight: Math.min(240, menuRect.top - 8),
+                  }
+                : {
+                    top: menuRect.bottom + 8,
+                    maxHeight: Math.min(240, menuRect.viewportHeight - menuRect.bottom - 8),
+                  }),
             }}
           >
             {visibleOptions.length > 0 ? (
